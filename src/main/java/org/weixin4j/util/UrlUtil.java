@@ -108,29 +108,4 @@ public class UrlUtil {
         }
         return encode(param.toString());
     }
-
-    public static void main(String[] args) throws UnsupportedEncodingException {
-        en("fromOpenId=111");
-        //de("b3JpZ2luYWxJZCUzRGdoXzFlNmQ1NmRiYTQ4Nw==");
-    }
-
-    private static String en(String p) {
-        System.out.println("p = " + p);
-
-        String enp = encode(p);
-
-        System.out.println("enp = " + enp);
-
-        return enp;
-    }
-
-    private static String de(String p) {
-        System.out.println("p = " + p);
-
-        String dep = decode(p);
-
-        System.out.println("dep = " + dep);
-
-        return dep;
-    }
 }

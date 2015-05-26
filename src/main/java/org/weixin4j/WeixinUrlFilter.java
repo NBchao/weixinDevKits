@@ -44,15 +44,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * <p>Title: 微信公众平台接受消息拦截器</p>
+ * <p>
+ * Title: 微信公众平台接受消息拦截器
+ * </p>
  *
- * <p>Description: 拦截Url http://www.weixin4j.org/api/vzhanqun</p>
+ * <p>
+ * Description: 拦截Url http://www.weixin4j.org/api/vzhanqun
+ * </p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
 public class WeixinUrlFilter implements Filter {
 
-    private String _token;
     private static IMessageHandler messageHandler = null;
     private static String defaultHandler = "org.weixin4j.spi.DefaultMessageHandler";
 
@@ -74,30 +77,11 @@ public class WeixinUrlFilter implements Filter {
             System.out.println("微信请求URL:" + request.getServletPath());
         }
         if (isGet) {
-            String path = request.getServletPath();
             //1.验证消息真实性
             //http://mp.weixin.qq.com/wiki/index.php?title=验证消息真实性
             //URL为http://www.weixin4j.org/api/公众号
-            //Token为weixin4j.properties中配置的Token
-            //获取微信公众号
-            String gongzonghao = path.substring(path.lastIndexOf("/"));
-            //如果获取不到公众号，则向服务器发生错误信息
-            if (gongzonghao == null) {
-                response.getWriter().write("error");
-            } else {
-                //根据公众号，算出对应的Token,然后进行验证
-                gongzonghao = gongzonghao.substring(1);
-                //算出公众号的Token
-                _token = TokenUtil.get(gongzonghao);
-                if (Configuration.isDebug()) {
-                    System.out.println("取出公众号加密后的Token:" + _token);
-                }
-                //token为空，则请求地址错误
-                if (!_token.equals("")) {
-                    //成为开发者验证
-                    doGet(request, response);
-                }
-            }
+            //成为开发者验证
+            doGet(request, response);
         } else {
             //用户每次向公众号发送消息、或者产生自定义菜单点击事件时，响应URL将得到推送
             doPost(request, response);
@@ -108,10 +92,12 @@ public class WeixinUrlFilter implements Filter {
     private void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String signature = request.getParameter("signature");// 微信加密签名
         String timestamp = request.getParameter("timestamp");// 时间戳
-        String nonce = request.getParameter("nonce");// 随机数
-        String echostr = request.getParameter("echostr");//
+        String nonce = request.getParameter("nonce");       // 随机数
+        String echostr = request.getParameter("echostr");   //
+        //Token为weixin4j.properties中配置的Token
+        String token = TokenUtil.get();
         //确认此次GET请求来自微信服务器，原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败
-        if (TokenUtil.checkSignature(_token, signature, timestamp, nonce)) {
+        if (TokenUtil.checkSignature(token, signature, timestamp, nonce)) {
             response.getWriter().write(echostr);
         }
     }
@@ -227,60 +213,5 @@ public class WeixinUrlFilter implements Filter {
 
     @Override
     public void destroy() {
-    }
-
-    public static void main(String[] args) throws Exception {
-        InputMessage inputMessage = new InputMessage();
-        inputMessage.setCreateTime(new Date().getTime());
-        inputMessage.setFromUserName("yakson");
-        inputMessage.setToUserName("qsyang");
-
-//        OutputMessage outputMsg = new TextOutputMessage("测试文本消息！");
-
-//        Image img = new Image();
-//        img.setMediaId("123");
-//        OutputMessage outputMsg = new ImageOutputMessage(img);
-
-//        Voice voice = new Voice();
-//        voice.setMediaId("321");
-//        OutputMessage outputMsg = new VoiceOutputMessage(voice);
-
-        Video video = new Video();
-        video.setMediaId("222");
-        video.setTitle("微信管家使用教程");
-        video.setDescription("以最简单的方式教您使用微信管家!");
-        OutputMessage outputMsg = new VideoOutputMessage(video);
-
-//        Music music = new Music();
-//        music.setTitle("最炫民族风");
-//        music.setDescription("中国比较经典的一首歌！");
-//        music.setMusicUrl("http://www.vzhanqun.com/music/1/1.mp3");
-//        music.setHQMusicUrl("http://www.vzhanqun.com/music/1/1_hd.mp3");
-//        music.setThumbMediaId("333");
-//        OutputMessage outputMsg = new MusicOutputMessage(music);
-
-//        OutputMessage outputMsg = new NewsOutputMessage();
-//        List<Articles> artiles = new ArrayList<Articles>();
-//        Articles article1 = new Articles();
-//        article1.setTitle("测试图文信息1");
-//        article1.setUrl("http://www.vzhanqun.com/news/1/1.htm");
-//        article1.setDescription("文章描述1");
-//        article1.setPicUrl("http://www.vzhanqun.com/upload/2014/03/20/1.jpg");
-//        artiles.add(article1);
-//        Articles article2 = new Articles();
-//        article2.setTitle("测试图文信息2");
-//        article2.setUrl("http://www.vzhanqun.com/news/1/2.htm");
-//        article2.setDescription("文章描述2");
-//        article2.setPicUrl("http://www.vzhanqun.com/upload/2014/03/20/2.jpg");
-//        artiles.add(article2);
-//        ((NewsOutputMessage)outputMsg).setArticles(artiles);
-
-        setOutputMsgInfo(outputMsg, inputMessage);
-        // 把发送发送对象转换为xml输出
-        XStream xs = XStreamFactory.init(true);
-        xs.alias("xml", outputMsg.getClass());
-        xs.alias("item", Articles.class);
-        String xml = xs.toXML(outputMsg);
-        System.out.println(xml);
     }
 }

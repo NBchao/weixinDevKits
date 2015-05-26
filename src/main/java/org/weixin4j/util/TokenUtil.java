@@ -26,9 +26,11 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * <p>Title: 微信公众平台Token算法工具类</p>
+ * <p>
+ * Title: 微信公众平台Token算法工具类</p>
  *
- * <p>Description: 为应用提供URL算法<br /> 根据不同的URL返回不同的Token，以适应多微站的需求<br />
+ * <p>
+ * Description: 为应用提供URL算法<br /> 根据不同的URL返回不同的Token，以适应多微站的需求<br />
  * 例如：Url:http://www.vzhanqun.com/api/tiexinqiao<br />
  * 则默认Token:为jEvQdLxi0PvtgK8N+HzUpA==<br /> 根据配置的系统Token不同，而改变</p>
  *
@@ -37,18 +39,14 @@ import java.util.List;
 public class TokenUtil {
 
     //此加密密钥用于加密公众号Token，一经配置，不能修改，一旦修改，所有公众号需要重新填写Token
-    private static String systemToken = "";
+    private static String systemToken = null;
 
     /**
-     * 根据Url获取Token
+     * 获取配置文件配置的Token
      *
-     * @param url 微站Url
      * @return 微站Token
      */
-    public static String get(String url) {
-        if (url == null || url.equals("")) {
-            return "";
-        }
+    public static String get() {
         if (systemToken == null) {
             systemToken = Configuration.getProperty("weixin4j.token", "weixin4j");
         }
@@ -58,15 +56,14 @@ public class TokenUtil {
     /**
      * 加密/校验流程如下：
      *
-     * <p> 1. 将token、timestamp、nonce三个参数进行字典序排序
-     *
-     * 2.将三个参数字符串拼接成一个字符串进行sha1加密
-     *
-     * 3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信 </p>
+     * <p>
+     * 1. 将token、timestamp、nonce三个参数进行字典序排序<br>
+     * 2.将三个参数字符串拼接成一个字符串进行sha1加密<br>
+     * 3. 开发者获得加密后的字符串可与signature对比，标识该请求来源于微信<br>
+     * </p>
      *
      * @param token Token验证密钥
-     * @param signature
-     * 微信加密签名，signature结合了开发者填写的token参数和请求中的timestamp参数、nonce参数。
+     * @param signature 微信加密签名，signature结合了开发者填写的token参数和请求中的timestamp参数，nonce参数
      * @param timestamp 时间戳
      * @param nonce 随机数
      * @return 验证成功返回true,否则返回false
