@@ -34,7 +34,7 @@ public class NewsOutputMessage extends OutputMessage {
     /**
      * 消息类型:图文消息
      */
-    private String MsgType = "news";
+    private final String MsgType = "news";
     /**
      * 图文消息个数，限制为10条以内
      */
@@ -75,7 +75,7 @@ public class NewsOutputMessage extends OutputMessage {
     /**
      * 设置 多条图文消息信息
      *
-     * @param Articles 多条图文消息信息，默认第一个item为大图,注意，如果图文数超过10，则只读取前10个
+     * @param articles 多条图文消息信息，默认第一个item为大图,注意，如果图文数超过10，则只读取前10个
      */
     public void setArticles(List<Articles> articles) {
         if (articles != null) {

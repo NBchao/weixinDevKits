@@ -34,6 +34,9 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +44,8 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.weixin4j.http.Attachment;
+import org.weixin4j.http.HttpClient;
+import org.weixin4j.message.MediaType;
 import org.weixin4j.pay.UnifiedOrder;
 import org.weixin4j.pay.UnifiedOrderResult;
 import org.weixin4j.util.XStreamFactory;
@@ -53,17 +58,13 @@ import org.weixin4j.util.XStreamFactory;
 public class Weixin extends WeixinSupport implements java.io.Serializable {
 
     /**
-     * 获取access_token ?grant_type=client_credential&appid=APPID&secret=APPSECRET
-     */
-    private static final String accessTokenURL = "https://api.weixin.qq.com/cgi-bin/token";
-    /**
      * 公众号对象
      */
-    protected OAuth oauth = null;
+    private OAuth oauth = null;
     /**
      * 公众号Token对象
      */
-    protected OAuthToken oauthToken = null;
+    private OAuthToken oauthToken = null;
 
     /**
      * 微信基础支持
@@ -73,6 +74,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
 
     /**
      * 初始化微信对象
+     *
+     * <p>
+     * 此方法，一般是在数据库中已经有一个未过期的accessToken时调用
+     * </p>
      *
      * @param accessToken 旧访问Token
      * @param appId 开发者Id
@@ -130,8 +135,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         }
         //拼接参数
         String param = "?grant_type=" + grantType + "&appid=" + appId + "&secret=" + secret;
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.get(accessTokenURL + param);
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/token" + param);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -184,16 +191,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     }
 
     /**
-     * 获取用户基本信息
-     *
-     * http://mp.weixin.qq.com/wiki/14/bb5031008f1494a59c6f71fa0f319c66.html
-     *
-     * http请求方式: GET
-     * https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN
-     */
-    private static final String userInfoUrl = "https://api.weixin.qq.com/cgi-bin/user/info";
-
-    /**
      * 根据OpenId获取用户对象
      *
      * <p>
@@ -224,8 +221,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         checkLogin();
         //拼接参数
         String param = "?access_token=" + this.oauthToken.getAccess_token() + "&openid=" + openId + "&lang=" + lang;
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.get(userInfoUrl + param);
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/user/info" + param);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -242,15 +241,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         }
         return null;
     }
-    /**
-     * 获取关注者列表
-     *
-     * http://mp.weixin.qq.com/wiki/index.php?title=获取关注者列表
-     *
-     * http请求方式: GET（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&next_openid=NEXT_OPENID
-     */
-    private static final String userGetUrl = "https://api.weixin.qq.com/cgi-bin/user/get";
 
     /**
      * 获取所有关注者列表
@@ -301,8 +291,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         if (next_openid != null && !next_openid.equals("")) {
             param += next_openid;
         }
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.get(userGetUrl + param);
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/user/get" + param);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         Followers follower = null;
@@ -321,14 +313,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         }
         return follower;
     }
-    /**
-     * 创建分组
-     *
-     * http请求方式: POST（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/groups/create?access_token=ACCESS_TOKEN
-     * POST数据格式：json POST数据例子：{"group":{"name":"test"}}
-     */
-    private static final String groupsCreateUrl = "https://api.weixin.qq.com/cgi-bin/groups/create";
 
     /**
      * 创建分组
@@ -349,8 +333,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         JSONObject postName = new JSONObject();
         postName.put("name", name);
         postGroup.put("group", postName);
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.post(groupsCreateUrl + "?access_token=" + this.oauthToken.getAccess_token(), postGroup);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/groups/create?access_token=" + this.oauthToken.getAccess_token(), postGroup);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         Group group = null;
@@ -368,13 +354,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         }
         return group;
     }
-    /**
-     * 查询所有分组
-     *
-     * http请求方式: GET（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/groups/get?access_token=ACCESS_TOKEN
-     */
-    private static final String groupsGetUrl = "https://api.weixin.qq.com/cgi-bin/groups/get";
 
     /**
      * 查询所有分组
@@ -389,8 +368,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         //必须先调用检查登录方法
         checkLogin();
         List<Group> groupList = new ArrayList<Group>();
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.post(groupsGetUrl + "?access_token=" + this.oauthToken.getAccess_token(), null);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/groups/get?access_token=" + this.oauthToken.getAccess_token(), null);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -412,14 +393,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         }
         return groupList;
     }
-    /**
-     * 查询用户所在分组
-     *
-     * http请求方式: POST（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/groups/getid?access_token=ACCESS_TOKEN
-     * POST数据格式：json POST数据例子：{"openid":"od8XIjsmk6QdVTETa9jLtGWA6KBc"}
-     */
-    private static final String groupsGetIdUrl = "https://api.weixin.qq.com/cgi-bin/groups/getid";
 
     /**
      * 查询用户所在分组
@@ -442,8 +415,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         //拼接参数
         JSONObject postParam = new JSONObject();
         postParam.put("openid", openid);
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.post(groupsGetIdUrl + "?access_token=" + this.oauthToken.getAccess_token(), postParam);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/groups/getid?access_token=" + this.oauthToken.getAccess_token(), postParam);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -460,14 +435,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         }
         return groupId;
     }
-    /**
-     * 修改分组名
-     *
-     * http请求方式: POST（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/groups/update?access_token=ACCESS_TOKEN
-     * POST数据格式：json POST数据例子：{"group":{"id":108,"name":"test2_modify2"}}
-     */
-    private static final String groupsUpdateUrl = "https://api.weixin.qq.com/cgi-bin/groups/update";
 
     /**
      * 修改分组名
@@ -492,8 +459,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         postName.put("id", id);
         postName.put("name", name);
         postGroup.put("group", postName);
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.post(groupsUpdateUrl + "?access_token=" + this.oauthToken.getAccess_token(), postGroup);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/groups/update?access_token=" + this.oauthToken.getAccess_token(), postGroup);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -515,15 +484,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     /**
      * 删除分组
      *
-     * http请求方式: POST（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/groups/delete?access_token=ACCESS_TOKEN
-     * 对应删除接口，正确的Json返回结果: {"errcode":0,"errmsg":"ok"}
-     */
-    private static final String groupDeleteUrl = "https://api.weixin.qq.com/cgi-bin/groups/delete";
-
-    /**
-     * 删除分组
-     *
      * @param groupId 分组Id
      * @throws WeixinException 删除分组异常
      */
@@ -535,8 +495,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         JSONObject group = new JSONObject();
         group.put("id", groupId);
         postParam.put("group", group);
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.post(groupDeleteUrl + "?access_token=" + this.oauthToken.getAccess_token(), postParam);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/groups/delete?access_token=" + this.oauthToken.getAccess_token(), postParam);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -550,16 +512,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             }
         }
     }
-
-    /**
-     * 移动用户分组
-     *
-     * http请求方式: POST（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/groups/members/update?access_token=ACCESS_TOKEN
-     * POST数据格式：json
-     * POST数据例子：{"openid":"oDF3iYx0ro3_7jD4HFRDfrjdCM58","to_groupid":108}
-     */
-    private static final String groupsMembersUpdateUrl = "https://api.weixin.qq.com/cgi-bin/groups/members/update";
 
     /**
      * 移动用户分组
@@ -582,8 +534,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         JSONObject postParam = new JSONObject();
         postParam.put("openid", openid);
         postParam.put("to_groupid", to_groupid);
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.post(groupsMembersUpdateUrl + "?access_token=" + this.oauthToken.getAccess_token(), postParam);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/groups/members/update?access_token=" + this.oauthToken.getAccess_token(), postParam);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -603,20 +557,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     }
 
     /**
-     * 自定义菜单
-     *
-     * http请求方式: POST（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN
-     * POST数据格式：json POST数据例子：{ "button":[ { "type":"click", "name":"今日歌曲",
-     * "key":"V1001_TODAY_MUSIC" }, { "type":"click", "name":"歌手简介",
-     * "key":"V1001_TODAY_SINGER" }, { "name":"菜单", "sub_button":[ {
-     * "type":"view", "name":"搜索", "url":"http://www.soso.com/" }, {
-     * "type":"view", "name":"视频", "url":"http://v.qq.com/" }, { "type":"click",
-     * "name":"赞一下我们", "key":"V1001_GOOD" }] }] }
-     */
-    private static final String menuCreateUrl = "https://api.weixin.qq.com/cgi-bin/menu/create";
-
-    /**
      * 创建自定义菜单
      *
      * @param menu 菜单对象
@@ -629,8 +569,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         if (menu == null || menu.getButton() == null) {
             throw new IllegalStateException("menu is null!");
         }
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.post(menuCreateUrl + "?access_token=" + this.oauthToken.getAccess_token(), menu.toJSONObject());
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/menu/create?access_token=" + this.oauthToken.getAccess_token(), menu.toJSONObject());
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -644,15 +586,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             }
         }
     }
-    /**
-     * 获取自定义菜单json字符串
-     *
-     * http请求方式: POST（请使用https协议）
-     * https://api.weixin.qq.com/cgi-bin/menu/get?access_token=ACCESS_TOKEN
-     * POST数据格式：json
-     * POST数据例子：{"menu":{"button":[{"type":"click","name":"今日歌曲","key":"V1001_TODAY_MUSIC","sub_button":[]},{"type":"click","name":"歌手简介","key":"V1001_TODAY_SINGER","sub_button":[]},{"name":"菜单","sub_button":[{"type":"view","name":"搜索","url":"http://www.soso.com/","sub_button":[]},{"type":"view","name":"视频","url":"http://v.qq.com/","sub_button":[]},{"type":"click","name":"赞一下我们","key":"V1001_GOOD","sub_button":[]}]}]}}
-     */
-    private static final String menuGetUrl = "https://api.weixin.qq.com/cgi-bin/menu/get";
 
     /**
      * 查询自定义菜单
@@ -666,11 +599,12 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     public Menu getMenu() throws WeixinException {
         //必须先调用检查登录方法
         checkLogin();
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.post(menuGetUrl + "?access_token=" + this.oauthToken.getAccess_token(), null);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/menu/get?access_token=" + this.oauthToken.getAccess_token(), null);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
-//        JSONObject jsonObj = JSONObject.fromObject("{\"menu\": {\"button\": [{\"type\": \"view\", \"name\": \"最新活动\", \"url\": \"http://wap.tiexinqiao.net\", \"sub_button\": [ ]}, {\"type\": \"click\", \"name\": \"特价优惠\", \"key\": \"C_1\", \"sub_button\": [ ]}, {\"name\": \"我的生活\", \"sub_button\": [{\"type\": \"click\", \"name\": \"生活超市\", \"key\": \"C_2_1\", \"sub_button\": [ ]}, {\"type\": \"click\", \"name\": \"网上订餐\", \"key\": \"C_2_2\", \"sub_button\": [ ]}, {\"type\": \"click\", \"name\": \"我的优惠劵\", \"key\": \"C_2_3\", \"sub_button\": [ ]}]}]}}");
         if (jsonObj != null) {
             if (Configuration.isDebug()) {
                 System.out.println("getMenu返回json：" + jsonObj.toString());
@@ -686,14 +620,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         //返回自定义菜单对
         return null;
     }
-    /**
-     * 自定义菜单删除接口
-     *
-     * http请求方式：GET
-     * https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=ACCESS_TOKEN
-     * 对应删除接口，正确的Json返回结果: {"errcode":0,"errmsg":"ok"}
-     */
-    private static final String menuDeleteUrl = "https://api.weixin.qq.com/cgi-bin/menu/delete";
 
     /**
      * 删除自定义菜单
@@ -703,8 +629,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     public void deleteMenu() throws WeixinException {
         //必须先调用检查登录方法
         checkLogin();
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取access_token接口
-        Response res = http.get(menuDeleteUrl + "?access_token=" + this.oauthToken.getAccess_token());
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/menu/delete?access_token=" + this.oauthToken.getAccess_token());
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -718,23 +646,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             }
         }
     }
-
-    /**
-     * 生成带参数的二维码 - 创建二维码ticket
-     *
-     * http请求方式：GET
-     * https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=TOKEN
-     * 对应删除接口，正确的Json返回结果: {"errcode":0,"errmsg":"ok"}
-     */
-    private static final String qrcodeCreateUrl = "https://api.weixin.qq.com/cgi-bin/qrcode/create";
-    /**
-     * 生成带参数的二维码 - 通过ticket换取二维码
-     *
-     * HTTP GET请求（请使用https协议）
-     * https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET
-     * 提醒：TICKET记得进行UrlEncode
-     */
-    private static final String showqrcodeUrl = "https://mp.weixin.qq.com/cgi-bin/showqrcode";
 
     /**
      * 创建二维码ticket
@@ -772,9 +683,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         actionInfo.put("scene", scene);
         //二维码详细信息
         ticketJson.put("action_info", actionInfo);
-
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用创建Tick的access_token接口
-        Response res = http.post(qrcodeCreateUrl + "?access_token=" + this.oauthToken.getAccess_token(), ticketJson);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=" + this.oauthToken.getAccess_token(), ticketJson);
         //根据请求结果判定，返回结果
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -788,7 +700,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             } else {
                 try {
                     //通过ticket换取二维码
-                    URL url = new URL(showqrcodeUrl + "?ticket=" + jsonObj.getString("ticket"));
+                    URL url = new URL("https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=" + jsonObj.getString("ticket"));
                     // 打开连接
                     URLConnection con = url.openConnection();
                     // 输入流
@@ -814,11 +726,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             }
         }
     }
-    /**
-     * 根据OpenID列表群发 http请求方式: POST
-     * https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token=ACCESS_TOKEN
-     */
-    private static final String massSendUrl = "https://api.weixin.qq.com/cgi-bin/message/mass/send";
 
     /**
      * 根据OpenID列表群发文本消息
@@ -835,7 +742,9 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         json.put("touser", openIds);
         json.put("text", text);
         json.put("msgtype", "text");
-        Response res = http.post(massSendUrl + "?access_token=" + this.oauthToken.getAccess_token(), json);
+        //创建请求对象
+        HttpClient http = new HttpClient();
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token=" + this.oauthToken.getAccess_token(), json);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -869,7 +778,9 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         json.put("touser", openIds);
         json.put("mpnews", media_id);
         json.put("msgtype", "mpnews");
-        Response res = http.post(massSendUrl + "?access_token=" + this.oauthToken.getAccess_token(), json);
+        //创建请求对象
+        HttpClient http = new HttpClient();
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/message/mass/send?access_token=" + this.oauthToken.getAccess_token(), json);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -889,22 +800,20 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     }
 
     /**
-     * http请求方式: POST
-     * http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=ACCESS_TOKEN&type=TYPE
-     */
-    private static final String mediaUploadUrl = "http://file.api.weixin.qq.com/cgi-bin/media/upload";
-
-    /**
-     * 上传多媒体文件
+     * 上传媒体文件
      *
-     * @param type 媒体文件类型，分别有图片（image）、语音（voice）、视频（video）和缩略图（thumb）
+     * @param mediaType 媒体文件类型，分别有图片（image）、语音（voice）、视频（video）和缩略图（thumb）
      * @param file form-data中媒体文件标识，有filename、filelength、content-type等信息
      * @return 上传成功返回素材Id，否则返回null
      * @throws WeixinException
      */
-    public String uploadMedia(String type, File file) throws WeixinException {
+    @Deprecated
+    public String uploadMedia(String mediaType, File file) throws WeixinException {
         try {
-            String jsonStr = http.upload(mediaUploadUrl + "?access_token=" + this.oauthToken.getAccess_token() + "&type=" + type, file);
+            //创建请求对象
+            HttpClient http = new HttpClient();
+            //上传素材，返回JSON数据包
+            String jsonStr = http.upload("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=" + this.oauthToken.getAccess_token() + "&type=" + mediaType, file);
             JSONObject jsonObj = JSONObject.fromObject(jsonStr);
             if (jsonObj != null) {
                 if (Configuration.isDebug()) {
@@ -920,16 +829,64 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 }
             }
             return null;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (NoSuchProviderException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (KeyManagementException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (NumberFormatException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (WeixinException ex) {
             throw new WeixinException("上传多媒体文件异常:", ex);
         }
     }
 
     /**
-     * http请求方式: POST
-     * https://api.weixin.qq.com/cgi-bin/media/uploadnews?access_token=ACCESS_TOKEN
+     * 新增临时素材
+     *
+     * @param mediaType 媒体文件类型，分别有图片（image）、语音（voice）、视频（video）和缩略图（thumb）
+     * @param file form-data中媒体文件标识，有filename、filelength、content-type等信息
+     * @return 上传成功返回素材Id，否则返回null
+     * @throws WeixinException
      */
-    private static final String mediaUploadnewsUrl = "https://api.weixin.qq.com/cgi-bin/media/uploadnews";
+    public String uploadMedia(MediaType mediaType, File file) throws WeixinException {
+        try {
+            //创建请求对象
+            HttpClient http = new HttpClient();
+            //上传素材，返回JSON数据包
+            String jsonStr = http.uploadHttps("https://api.weixin.qq.com/cgi-bin/media/upload?access_token=" + this.oauthToken.getAccess_token() + "&type=" + mediaType.toString(), file);
+            JSONObject jsonObj = JSONObject.fromObject(jsonStr);
+            if (jsonObj != null) {
+                if (Configuration.isDebug()) {
+                    System.out.println("上传多媒体文件返回json：" + jsonObj.toString());
+                }
+                Object errcode = jsonObj.get("errcode");
+                if (errcode != null && !errcode.toString().equals("0")) {
+                    //返回异常信息
+                    throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+                } else {
+                    //返回多媒体文件id
+                    return jsonObj.getString("media_id");
+                }
+            }
+            return null;
+        } catch (IOException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (NoSuchProviderException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (KeyManagementException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (NumberFormatException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        } catch (WeixinException ex) {
+            throw new WeixinException("上传多媒体文件异常:", ex);
+        }
+    }
 
     /**
      * 上传图文消息素材
@@ -941,7 +898,9 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     public String uploadnews(List<Article> articles) throws WeixinException {
         JSONObject json = new JSONObject();
         json.put("articles", articles);
-        Response res = http.post(mediaUploadnewsUrl + "?access_token=" + this.oauthToken.getAccess_token(), json);
+        //创建请求对象
+        HttpClient http = new HttpClient();
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/media/uploadnews?access_token=" + this.oauthToken.getAccess_token(), json);
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         if (jsonObj != null) {
@@ -961,12 +920,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     }
 
     /**
-     * http请求方式: POST
-     * https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN
-     */
-    private static final String customSendUrl = "https://api.weixin.qq.com/cgi-bin/message/custom/send";
-
-    /**
      * 发送客服文本消息
      *
      * @param openId 粉丝OpenId
@@ -980,7 +933,9 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         json.put("touser", openId);
         json.put("text", text);
         json.put("msgtype", "text");
-        http.post(customSendUrl + "?access_token=" + this.oauthToken.getAccess_token(), json);
+        //创建请求对象
+        HttpClient http = new HttpClient();
+        http.post("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + this.oauthToken.getAccess_token(), json);
     }
 
     /**
@@ -997,37 +952,37 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         JSONObject news = new JSONObject();
         news.put("articles", articles);
         json.put("news", news);
-        http.post(customSendUrl + "?access_token=" + this.oauthToken.getAccess_token(), json);
+        //创建请求对象
+        HttpClient http = new HttpClient();
+        http.post("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + this.oauthToken.getAccess_token(), json);
     }
-
-    /**
-     * 下载多媒体文件 http请求方式: GET
-     * http://file.api.weixin.qq.com/cgi-bin/media/get?access_token=ACCESS_TOKEN&media_id=MEDIA_ID
-     */
-    private static final String mediaGetUrl = "http://file.api.weixin.qq.com/cgi-bin/media/get";
 
     /**
      * 下载多媒体文件
      *
      * @param mediaId 媒体文件ID
      * @return 正确返回附件对象，否则返回null
-     * @throws IOException
+     * @throws WeixinException
      */
-    public Attachment download(String mediaId) throws IOException {
-        //下载资源
-        String url = mediaGetUrl + "?access_token=" + this.oauthToken.getAccess_token() + "&media_id=" + mediaId;
-        return http.download(url);
+    public Attachment download(String mediaId) throws WeixinException {
+        try {
+            //下载资源
+            String url = "https://api.weixin.qq.com/cgi-bin/media/get?access_token=" + this.oauthToken.getAccess_token() + "&media_id=" + mediaId;
+            //创建请求对象
+            HttpClient http = new HttpClient();
+            return http.download(url);
+        } catch (IOException ex) {
+            throw new WeixinException("下载多媒体文件异常:", ex);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new WeixinException("下载多媒体文件异常:", ex);
+        } catch (NoSuchProviderException ex) {
+            throw new WeixinException("下载多媒体文件异常:", ex);
+        } catch (KeyManagementException ex) {
+            throw new WeixinException("下载多媒体文件异常:", ex);
+        } catch (NumberFormatException ex) {
+            throw new WeixinException("下载多媒体文件异常:", ex);
+        }
     }
-
-    /**
-     * 获取jsapi_ticket
-     *
-     * 作用：公众号用于调用微信JS接口的临时票据
-     *
-     * jsapi_ticket的有效期为7200秒
-     * https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi
-     */
-    private static final String jsapiGetTicketUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
 
     /**
      * 获取jsapi_ticket
@@ -1038,8 +993,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     public String getJsApiTicket() throws WeixinException {
         //必须先调用检查登录方法
         checkLogin();
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //调用获取jsapi_ticket接口
-        Response res = http.get(jsapiGetTicketUrl + "?access_token=" + this.oauthToken.getAccess_token() + "&type=jsapi");
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + this.oauthToken.getAccess_token() + "&type=jsapi");
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
         //成功返回如下JSON:
@@ -1064,11 +1021,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
 
     /**
      * 统一下单
-     */
-    private static final String payUnifiedOrderURL = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-
-    /**
-     * 统一下单
      *
      * @param unifiedorder 统一下单对象
      * @return 下单返回结果对象
@@ -1080,8 +1032,10 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         if (Configuration.isDebug()) {
             System.out.println("调试模式_统一下单接口 提交XML数据：" + xmlPost);
         }
+        //创建请求对象
+        HttpClient http = new HttpClient();
         //提交xml格式数据
-        Response res = http.postXml(payUnifiedOrderURL, xmlPost);
+        Response res = http.postXml("https://api.mch.weixin.qq.com/pay/unifiedorder", xmlPost);
         //获取微信平台下单接口返回数据
         String xmlResult = res.asString();
         //将返回结果，转换为统一下单返回结果对象

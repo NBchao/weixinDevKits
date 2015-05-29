@@ -23,9 +23,11 @@ import org.weixin4j.message.OutputMessage;
 import org.weixin4j.message.TextOutputMessage;
 
 /**
- * <p>Title: 微信公众平台接受消息处理器</p>
+ * <p>
+ * Title: 微信公众平台接受消息处理器</p>
  *
- * <p>Description: 此消息处理器只负责接收消息和返回已收到消息的功能，无特殊功能。</p>
+ * <p>
+ * Description: 此消息处理器只负责接收消息和返回已收到消息的功能，无特殊功能。</p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
@@ -43,12 +45,27 @@ public class DefaultMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public OutputMessage locationTypeMsg(InputMessage msg) {
+    public OutputMessage imageTypeMsg(InputMessage msg) {
         return allType(msg);
     }
 
     @Override
-    public OutputMessage imageTypeMsg(InputMessage msg) {
+    public OutputMessage voiceTypeMsg(InputMessage msg) {
+        return allType(msg);
+    }
+
+    @Override
+    public OutputMessage videoTypeMsg(InputMessage msg) {
+        return allType(msg);
+    }
+
+    @Override
+    public OutputMessage shortvideoTypeMsg(InputMessage msg) {
+        return allType(msg);
+    }
+
+    @Override
+    public OutputMessage locationTypeMsg(InputMessage msg) {
         return allType(msg);
     }
 
@@ -59,11 +76,6 @@ public class DefaultMessageHandler implements IMessageHandler {
 
     @Override
     public OutputMessage eventTypeMsg(InputMessage msg) {
-        return allType(msg);
-    }
-
-    @Override
-    public OutputMessage voiceTypeMsg(InputMessage msg) {
         return allType(msg);
     }
 }

@@ -21,7 +21,6 @@ package org.weixin4j;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.weixin4j.http.HttpClient;
 
 /**
  * 微信平台支持
@@ -35,7 +34,6 @@ import org.weixin4j.http.HttpClient;
  */
 public class WeixinSupport {
 
-    protected HttpClient http = new HttpClient();
     /**
      * 全局返回码说明
      */

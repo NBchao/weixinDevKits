@@ -55,6 +55,10 @@ public class InputMessage {
     private String Event;
     private String EventKey;
     private String Ticket;
+    //上报地理位置事件
+    private String Latitude;
+    private String Longitude;
+    private String Precision;
     //群发消息事件
     private String MsgID;
     private String Status;
@@ -224,86 +228,74 @@ public class InputMessage {
         Ticket = ticket;
     }
 
-    /**
-     * @return the Status
-     */
+    public String getLatitude() {
+        return Latitude;
+    }
+
+    public void setLatitude(String Latitude) {
+        this.Latitude = Latitude;
+    }
+
+    public String getLongitude() {
+        return Longitude;
+    }
+
+    public void setLongitude(String Longitude) {
+        this.Longitude = Longitude;
+    }
+
+    public String getPrecision() {
+        return Precision;
+    }
+
+    public void setPrecision(String Precision) {
+        this.Precision = Precision;
+    }
+
     public String getStatus() {
         return Status;
     }
 
-    /**
-     * @param Status the Status to set
-     */
     public void setStatus(String Status) {
         this.Status = Status;
     }
 
-    /**
-     * @return the TotalCount
-     */
     public int getTotalCount() {
         return TotalCount;
     }
 
-    /**
-     * @param TotalCount the TotalCount to set
-     */
     public void setTotalCount(int TotalCount) {
         this.TotalCount = TotalCount;
     }
 
-    /**
-     * @return the FilterCount
-     */
     public int getFilterCount() {
         return FilterCount;
     }
 
-    /**
-     * @param FilterCount the FilterCount to set
-     */
     public void setFilterCount(int FilterCount) {
         this.FilterCount = FilterCount;
     }
 
-    /**
-     * @return the SentCount
-     */
     public int getSentCount() {
         return SentCount;
     }
 
-    /**
-     * @param SentCount the SentCount to set
-     */
     public void setSentCount(int SentCount) {
         this.SentCount = SentCount;
     }
 
-    /**
-     * @return the ErrorCount
-     */
     public int getErrorCount() {
         return ErrorCount;
     }
 
-    /**
-     * @param ErrorCount the ErrorCount to set
-     */
     public void setErrorCount(int ErrorCount) {
         this.ErrorCount = ErrorCount;
     }
 
-    /**
-     * @return the MsgID
-     */
     public String getMsgID() {
         return MsgID;
     }
 
-    /**
-     * @param MsgID the MsgID to set
-     */
     public void setMsgID(String MsgID) {
         this.MsgID = MsgID;
     }

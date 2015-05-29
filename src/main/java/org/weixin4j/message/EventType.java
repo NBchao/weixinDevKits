@@ -47,10 +47,6 @@ public enum EventType {
      */
     Click("click"),
     /**
-     * 进入会话
-     */
-    Enter("enter"),
-    /**
      * 查看菜单
      */
     View("view");

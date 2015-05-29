@@ -27,27 +27,31 @@ package org.weixin4j.message;
 public enum MsgType {
 
     /**
-     * 文本消息
+     * 1 文本消息
      */
     Text("text"),
     /**
-     * 图片消息
+     * 2 图片消息
      */
     Image("image"),
     /**
-     * 语音消息
+     * 3 语音消息
      */
     Voice("voice"),
     /**
-     * 视频消息
+     * 4 视频消息
      */
     Video("video"),
     /**
-     * 地理位置消息
+     * 5 小视频消息
+     */
+    ShortVideo("shortvideo"),
+    /**
+     * 6 地理位置消息
      */
     Location("location"),
     /**
-     * 链接消息
+     * 7 链接消息
      */
     Link("link"),
     /**

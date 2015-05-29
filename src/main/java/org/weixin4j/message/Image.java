@@ -22,7 +22,8 @@ package org.weixin4j.message;
 /**
  * 回复图片消息中的图片对象
  *
- * <p>提供了获取图片Id<code>getMediaId()</code>等主要方法.</p>
+ * <p>
+ * 提供了获取图片Id<code>getMediaId()</code>等主要方法.</p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
@@ -42,7 +43,7 @@ public class Image implements java.io.Serializable {
     /**
      * 设置 通过上传多媒体文件，得到的id
      *
-     * @param image 通过上传多媒体文件，得到的id
+     * @param mediaId 通过上传多媒体文件，得到的id
      */
     public void setMediaId(String mediaId) {
         this.MediaId = mediaId;
