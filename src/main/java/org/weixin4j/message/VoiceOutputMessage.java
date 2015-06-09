@@ -31,7 +31,7 @@ public class VoiceOutputMessage extends OutputMessage {
     /**
      * 消息类型:语音消息
      */
-    private String MsgType = "voice";
+    private final String MsgType = "voice";
     /**
      * 通过上传多媒体文件，得到的id封装的Voice对象
      */
@@ -46,7 +46,7 @@ public class VoiceOutputMessage extends OutputMessage {
     /**
      * 创建一个自定义语音Id mediaId的Output Message.
      *
-     * @param Voice 语音资源Id
+     * @param voice 语音资源Id
      */
     public VoiceOutputMessage(Voice voice) {
         Voice = voice;
@@ -57,6 +57,7 @@ public class VoiceOutputMessage extends OutputMessage {
      *
      * @return 消息类型
      */
+    @Override
     public String getMsgType() {
         return MsgType;
     }

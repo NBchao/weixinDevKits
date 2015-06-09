@@ -22,7 +22,8 @@ package org.weixin4j.message;
 /**
  * 这个类实现了<tt>OutputMessage</tt>，用来回复图片消息
  *
- * <p>提供了获取图片Id<code>getMediaId()</code>等主要方法.</p>
+ * <p>
+ * 提供了获取图片Id<code>getMediaId()</code>等主要方法.</p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
@@ -31,22 +32,26 @@ public class ImageOutputMessage extends OutputMessage {
     /**
      * 消息类型:图片消息
      */
-    private String MsgType = "image";
+    private final String MsgType = "image";
     /**
      * 通过上传多媒体文件，得到的id
      */
     private Image Image;
 
     /**
-     * 创建一个新的 Output Message.并且MsgType的值为image.
+     * 创建一个图片 Output Message.
+     *
+     * 并且MsgType的值为image.
      */
     public ImageOutputMessage() {
     }
 
     /**
-     * 创建一个自定义图片Id mediaId的Output Message.
+     * 创建一个图片 的Output Message.
      *
-     * @param MediaId 图片资源Id
+     * 并且MsgType的值为image.
+     *
+     * @param image 图片
      */
     public ImageOutputMessage(Image image) {
         this.Image = image;

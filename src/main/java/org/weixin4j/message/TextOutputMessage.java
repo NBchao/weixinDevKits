@@ -31,7 +31,7 @@ public class TextOutputMessage extends OutputMessage {
     /**
      * 消息类型:文本消息
      */
-    private String MsgType = "text";
+    private final String MsgType = "text";
     /**
      * 文本消息
      */

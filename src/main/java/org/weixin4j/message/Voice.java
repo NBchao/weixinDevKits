@@ -42,7 +42,7 @@ public class Voice implements java.io.Serializable {
     /**
      * 设置 通过上传多媒体文件，得到的id
      *
-     * @param image 通过上传多媒体文件，得到的id
+     * @param mediaId 通过上传多媒体文件，得到的id
      */
     public void setMediaId(String mediaId) {
         this.MediaId = mediaId;

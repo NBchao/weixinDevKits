@@ -20,7 +20,7 @@
 package org.weixin4j.menu;
 
 /**
- * click类型自定义菜单
+ * 点击推事件
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */

@@ -22,7 +22,8 @@ package org.weixin4j.spi;
 /**
  * POST的XML数据包转换为消息接受对象
  *
- * <p>由于POST的是XML数据包，所以不确定为哪种接受消息，<br/>
+ * <p>
+ * 由于POST的是XML数据包，所以不确定为哪种接受消息，<br/>
  * 所以直接将所有字段都进行转换，最后根据<tt>MsgType</tt>字段来判断取何种数据</p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
@@ -66,6 +67,12 @@ public class InputMessage {
     private int FilterCount;
     private int SentCount;
     private int ErrorCount;
+    //扫码推事件
+    private ScanCodeInfo ScanCodeInfo;
+    //拍照发图
+    private SendPicsInfo SendPicsInfo;
+    //发送地理位置
+    private SendLocationInfo SendLocationInfo;
 
     public String getToUserName() {
         return ToUserName;
@@ -298,5 +305,29 @@ public class InputMessage {
 
     public void setMsgID(String MsgID) {
         this.MsgID = MsgID;
+    }
+
+    public ScanCodeInfo getScanCodeInfo() {
+        return ScanCodeInfo;
+    }
+
+    public void setScanCodeInfo(ScanCodeInfo ScanCodeInfo) {
+        this.ScanCodeInfo = ScanCodeInfo;
+    }
+
+    public SendLocationInfo getSendLocationInfo() {
+        return SendLocationInfo;
+    }
+
+    public void setSendLocationInfo(SendLocationInfo SendLocationInfo) {
+        this.SendLocationInfo = SendLocationInfo;
+    }
+
+    public SendPicsInfo getSendPicsInfo() {
+        return SendPicsInfo;
+    }
+
+    public void setSendPicsInfo(SendPicsInfo SendPicsInfo) {
+        this.SendPicsInfo = SendPicsInfo;
     }
 }

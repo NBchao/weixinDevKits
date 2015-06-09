@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 响应动作类型自定义菜单
+ * 带子菜单的按钮,此按钮中必须设置子菜单
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */

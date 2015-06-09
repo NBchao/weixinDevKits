@@ -20,44 +20,44 @@
 package org.weixin4j.menu;
 
 /**
- * 跳转URL
+ * 永久素材(图片、音频、视频、图文消息)
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
-public class ViewButton extends SingleButton {
+public class MediaIdButton extends SingleButton {
 
     /**
-     * view类型必须.网页链接，用户点击菜单可打开链接，不超过256字节
+     * 类型必须.网页链接，用户点击菜单可打开链接，不超过256字节
      */
-    private String url;
+    private String mediaId;
 
-    public ViewButton() {
+    public MediaIdButton() {
     }
 
-    public ViewButton(String name, String url) {
+    public MediaIdButton(String name, String mediaId) {
         this.setName(name);
-        this.url = url;
+        this.mediaId = mediaId;
     }
 
     public String getType() {
-        return ButtonType.View.toString();
+        return ButtonType.Media_Id.toString();
     }
 
     /**
-     * 获取 网页链接 <p>view类型必须.网页链接，用户点击菜单可打开链接，不超过256字节</p>
+     * 获取 调用新增永久素材接口返回的合法media_id
      *
-     * @return 网页链接
+     * @return 调用新增永久素材接口返回的合法media_id
      */
-    public String getUrl() {
-        return url;
+    public String getMedia_Id() {
+        return mediaId;
     }
 
     /**
-     * 设置 网页链接 <p>view类型必须.网页链接，用户点击菜单可打开链接，不超过256字节</p>
+     * 设置 调用新增永久素材接口返回的合法media_id
      *
-     * @param url 网页链接
+     * @param url 调用新增永久素材接口返回的合法media_id
      */
-    public void setUrl(String url) {
-        this.url = url;
+    public void setMedia_Id(String mediaId) {
+        this.mediaId = mediaId;
     }
 }

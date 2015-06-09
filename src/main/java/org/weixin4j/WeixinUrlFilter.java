@@ -22,8 +22,6 @@ package org.weixin4j;
 import org.weixin4j.message.Articles;
 import org.weixin4j.message.OutputMessage;
 import org.weixin4j.message.TextOutputMessage;
-import org.weixin4j.message.Video;
-import org.weixin4j.message.VideoOutputMessage;
 import org.weixin4j.spi.IMessageHandler;
 import org.weixin4j.spi.InputMessage;
 import org.weixin4j.util.TokenUtil;

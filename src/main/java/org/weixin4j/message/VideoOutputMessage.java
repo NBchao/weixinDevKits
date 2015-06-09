@@ -22,7 +22,8 @@ package org.weixin4j.message;
 /**
  * 这个类实现了<tt>OutputMessage</tt>，用来回复视频消息
  *
- * <p>提供了获取视频Id<code>getMediaId()</code>等主要方法.</p>
+ * <p>
+ * 提供了获取视频Id<code>getMediaId()</code>等主要方法.</p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
@@ -31,22 +32,26 @@ public class VideoOutputMessage extends OutputMessage {
     /**
      * 消息类型:视频消息
      */
-    private String MsgType = "video";
+    private final String MsgType = "video";
     /**
      * 通过上传多媒体文件，得到的id
      */
     private Video Video;
 
     /**
-     * 创建一个新的 Output Message.并且MsgType的值为text.
+     * 创建一个视频 Output Message.
+     *
+     * 并且MsgType的值为video.
      */
     public VideoOutputMessage() {
     }
 
     /**
-     * 创建一个自定义视频Id mediaId的Output Message.
+     * 创建一个视频 Output Message.
      *
-     * @param MediaId 视频资源Id
+     * 并且MsgType的值为video.
+     *
+     * @param video 视频
      */
     public VideoOutputMessage(Video video) {
         Video = video;

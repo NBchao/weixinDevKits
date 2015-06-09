@@ -27,6 +27,14 @@ import java.util.ArrayList;
 import java.util.List;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.weixin4j.menu.LocationSelectButton;
+import org.weixin4j.menu.MediaIdButton;
+import org.weixin4j.menu.PicPhotoOrAlbumButton;
+import org.weixin4j.menu.PicSysPhotoButton;
+import org.weixin4j.menu.PicWeixinButton;
+import org.weixin4j.menu.ScancodePushButton;
+import org.weixin4j.menu.ScancodeWaitMsgButton;
+import org.weixin4j.menu.ViewLimitedButton;
 
 /**
  * 菜单对象
@@ -73,6 +81,30 @@ public class Menu {
         } else if (type.equals(ButtonType.View.toString())) {
             //转成view按钮
             singleButton = new ViewButton(jsonButton.getString("name"), jsonButton.getString("url"));
+        } else if (type.equals(ButtonType.Scancode_Push.toString())) {
+            //扫码推事件
+            singleButton = new ScancodePushButton(jsonButton.getString("name"), jsonButton.getString("key"));
+        } else if (type.equals(ButtonType.Scancode_Waitmsg.toString())) {
+            //扫码推事件且弹出“消息接收中”提示框
+            singleButton = new ScancodeWaitMsgButton(jsonButton.getString("name"), jsonButton.getString("key"));
+        } else if (type.equals(ButtonType.Pic_SysPhoto.toString())) {
+            //弹出系统拍照发图
+            singleButton = new PicSysPhotoButton(jsonButton.getString("name"), jsonButton.getString("key"));
+        } else if (type.equals(ButtonType.Pic_Photo_OR_Album.toString())) {
+            //弹出拍照或者相册发图
+            singleButton = new PicPhotoOrAlbumButton(jsonButton.getString("name"), jsonButton.getString("key"));
+        } else if (type.equals(ButtonType.Pic_Weixin.toString())) {
+            //弹出微信相册发图器
+            singleButton = new PicWeixinButton(jsonButton.getString("name"), jsonButton.getString("key"));
+        } else if (type.equals(ButtonType.Location_Select.toString())) {
+            //弹出地理位置选择器
+            singleButton = new LocationSelectButton(jsonButton.getString("name"), jsonButton.getString("key"));
+        } else if (type.equals(ButtonType.Media_Id.toString())) {
+            //永久素材(图片、音频、视频、图文消息)
+            singleButton = new MediaIdButton(jsonButton.getString("name"), jsonButton.getString("media_id"));
+        } else if (type.equals(ButtonType.View_Limited.toString())) {
+            //永久素材(图文消息)
+            singleButton = new ViewLimitedButton(jsonButton.getString("name"), jsonButton.getString("media_id"));
         }
         if (jsonButton.containsKey("sub_button")) {
             JSONArray sub_button = jsonButton.getJSONArray("sub_button");
@@ -111,13 +143,45 @@ public class Menu {
                 JSONObject btnJson = new JSONObject();
                 btnJson.put("name", btn.getName());
                 if (btn instanceof ViewButton) {
-                    ViewButton viewBtn = (ViewButton) btn;
-                    btnJson.put("type", viewBtn.getType());
-                    btnJson.put("url", viewBtn.getUrl());
+                    ViewButton cBtn = (ViewButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("url", cBtn.getUrl());
                 } else if (btn instanceof ClickButton) {
-                    ClickButton clickBtn = (ClickButton) btn;
-                    btnJson.put("type", clickBtn.getType());
-                    btnJson.put("key", clickBtn.getKey());
+                    ClickButton cBtn = (ClickButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("key", cBtn.getKey());
+                } else if (btn instanceof ScancodePushButton) {
+                    ScancodePushButton cBtn = (ScancodePushButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("key", cBtn.getKey());
+                } else if (btn instanceof ScancodeWaitMsgButton) {
+                    ScancodeWaitMsgButton cBtn = (ScancodeWaitMsgButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("key", cBtn.getKey());
+                } else if (btn instanceof PicSysPhotoButton) {
+                    PicSysPhotoButton cBtn = (PicSysPhotoButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("key", cBtn.getKey());
+                } else if (btn instanceof PicPhotoOrAlbumButton) {
+                    PicPhotoOrAlbumButton cBtn = (PicPhotoOrAlbumButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("key", cBtn.getKey());
+                } else if (btn instanceof PicWeixinButton) {
+                    PicWeixinButton cBtn = (PicWeixinButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("key", cBtn.getKey());
+                } else if (btn instanceof LocationSelectButton) {
+                    LocationSelectButton cBtn = (LocationSelectButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("key", cBtn.getKey());
+                } else if (btn instanceof MediaIdButton) {
+                    MediaIdButton cBtn = (MediaIdButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("media_id", cBtn.getMedia_Id());
+                } else if (btn instanceof ViewLimitedButton) {
+                    ViewLimitedButton cBtn = (ViewLimitedButton) btn;
+                    btnJson.put("type", cBtn.getType());
+                    btnJson.put("media_id", cBtn.getMedia_Id());
                 }
                 //设置子菜单信息
                 JSONArray subButtonArray = new JSONArray();
@@ -125,13 +189,45 @@ public class Menu {
                     JSONObject subBtnJson = new JSONObject();
                     subBtnJson.put("name", subBtn.getName());
                     if (subBtn instanceof ViewButton) {
-                        ViewButton viewBtn = (ViewButton) subBtn;
-                        subBtnJson.put("type", viewBtn.getType());
-                        subBtnJson.put("url", viewBtn.getUrl());
+                        ViewButton cBtn = (ViewButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("url", cBtn.getUrl());
                     } else if (subBtn instanceof ClickButton) {
-                        ClickButton clickBtn = (ClickButton) subBtn;
-                        subBtnJson.put("type", clickBtn.getType());
-                        subBtnJson.put("key", clickBtn.getKey());
+                        ClickButton cBtn = (ClickButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("key", cBtn.getKey());
+                    } else if (subBtn instanceof ScancodePushButton) {
+                        ScancodePushButton cBtn = (ScancodePushButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("key", cBtn.getKey());
+                    } else if (subBtn instanceof ScancodeWaitMsgButton) {
+                        ScancodeWaitMsgButton cBtn = (ScancodeWaitMsgButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("key", cBtn.getKey());
+                    } else if (subBtn instanceof PicSysPhotoButton) {
+                        PicSysPhotoButton cBtn = (PicSysPhotoButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("key", cBtn.getKey());
+                    } else if (subBtn instanceof PicPhotoOrAlbumButton) {
+                        PicPhotoOrAlbumButton cBtn = (PicPhotoOrAlbumButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("key", cBtn.getKey());
+                    } else if (subBtn instanceof PicWeixinButton) {
+                        PicWeixinButton cBtn = (PicWeixinButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("key", cBtn.getKey());
+                    } else if (subBtn instanceof LocationSelectButton) {
+                        LocationSelectButton cBtn = (LocationSelectButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("key", cBtn.getKey());
+                    } else if (subBtn instanceof MediaIdButton) {
+                        MediaIdButton cBtn = (MediaIdButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("media_id", cBtn.getMedia_Id());
+                    } else if (subBtn instanceof ViewLimitedButton) {
+                        ViewLimitedButton cBtn = (ViewLimitedButton) subBtn;
+                        btnJson.put("type", cBtn.getType());
+                        btnJson.put("media_id", cBtn.getMedia_Id());
                     }
                     subButtonArray.add(subBtnJson);
                 }
@@ -144,9 +240,6 @@ public class Menu {
         return buttonJson;
     }
 
-    /**
-     * @return the button
-     */
     public List<SingleButton> getButton() {
         if (button == null) {
             button = new ArrayList<SingleButton>(0);
@@ -154,9 +247,6 @@ public class Menu {
         return button;
     }
 
-    /**
-     * @param button the button to set
-     */
     public void setButton(List<SingleButton> button) {
         this.button = button;
     }
