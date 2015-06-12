@@ -40,6 +40,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.weixin4j.spi.PicList;
 
 /**
  * <p>
@@ -145,6 +146,7 @@ public class WeixinUrlFilter implements Filter {
             }
             //将指定节点下的xml节点数据转换为对象
             xs.alias("xml", InputMessage.class);
+            xs.alias("item", PicList.class);
             if (Configuration.isDebug()) {
                 System.out.println("将指定节点下的xml节点数据转换为对象成功!");
             }

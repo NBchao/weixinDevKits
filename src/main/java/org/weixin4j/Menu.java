@@ -190,44 +190,44 @@ public class Menu {
                     subBtnJson.put("name", subBtn.getName());
                     if (subBtn instanceof ViewButton) {
                         ViewButton cBtn = (ViewButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("url", cBtn.getUrl());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("url", cBtn.getUrl());
                     } else if (subBtn instanceof ClickButton) {
                         ClickButton cBtn = (ClickButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("key", cBtn.getKey());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("key", cBtn.getKey());
                     } else if (subBtn instanceof ScancodePushButton) {
                         ScancodePushButton cBtn = (ScancodePushButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("key", cBtn.getKey());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("key", cBtn.getKey());
                     } else if (subBtn instanceof ScancodeWaitMsgButton) {
                         ScancodeWaitMsgButton cBtn = (ScancodeWaitMsgButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("key", cBtn.getKey());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("key", cBtn.getKey());
                     } else if (subBtn instanceof PicSysPhotoButton) {
                         PicSysPhotoButton cBtn = (PicSysPhotoButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("key", cBtn.getKey());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("key", cBtn.getKey());
                     } else if (subBtn instanceof PicPhotoOrAlbumButton) {
                         PicPhotoOrAlbumButton cBtn = (PicPhotoOrAlbumButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("key", cBtn.getKey());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("key", cBtn.getKey());
                     } else if (subBtn instanceof PicWeixinButton) {
                         PicWeixinButton cBtn = (PicWeixinButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("key", cBtn.getKey());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("key", cBtn.getKey());
                     } else if (subBtn instanceof LocationSelectButton) {
                         LocationSelectButton cBtn = (LocationSelectButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("key", cBtn.getKey());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("key", cBtn.getKey());
                     } else if (subBtn instanceof MediaIdButton) {
                         MediaIdButton cBtn = (MediaIdButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("media_id", cBtn.getMedia_Id());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("media_id", cBtn.getMedia_Id());
                     } else if (subBtn instanceof ViewLimitedButton) {
                         ViewLimitedButton cBtn = (ViewLimitedButton) subBtn;
-                        btnJson.put("type", cBtn.getType());
-                        btnJson.put("media_id", cBtn.getMedia_Id());
+                        subBtnJson.put("type", cBtn.getType());
+                        subBtnJson.put("media_id", cBtn.getMedia_Id());
                     }
                     subButtonArray.add(subBtnJson);
                 }
