@@ -1,8 +1,10 @@
 package org.weixin4j.pay;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.StringReader;
 import java.util.Map;
-import org.weixin4j.util.XStreamFactory;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 /**
  * 微信支付工具
@@ -61,21 +63,24 @@ public class PayUtil {
      * @return 签名验证，成功返回true,否则返回false
      */
     public static boolean verifySign(String xmlMsg, String paternerKey) {
-        XStream xs = XStreamFactory.init(false);
-        xs.alias("xml", PayNotifyResult.class);
-        //结果
-        PayNotifyResult payNotifyResult = (PayNotifyResult) xs.fromXML(xmlMsg);
-        //转换为Map
-        Map<String, String> M = payNotifyResult.toMap();
-        if (M.containsKey("sign")) {
-            M.remove("sign");
-        }
-        //签名
-        String sign = SignUtil.getSign(M, paternerKey);
-        if (sign == null || sign.equals("")) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(PayNotifyResult.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            PayNotifyResult result = (PayNotifyResult) unmarshaller.unmarshal(new StringReader(xmlMsg));
+            //转换为Map
+            Map<String, String> M = result.toMap();
+            if (M.containsKey("sign")) {
+                M.remove("sign");
+            }
+            //签名
+            String sign = SignUtil.getSign(M, paternerKey);
+            if (sign == null || sign.equals("")) {
+                return false;
+            }
+            //判断是否一致
+            return sign.equals(result.getSign());
+        } catch (JAXBException ex) {
             return false;
         }
-        //判断是否一致
-        return sign.equals(payNotifyResult.getSign());
     }
 }

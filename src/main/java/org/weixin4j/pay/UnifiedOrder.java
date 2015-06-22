@@ -25,16 +25,12 @@ import java.util.Map;
 /**
  * 统一下单
  *
- * 接口文档：<a href="http://pay.weixin.qq.com/wiki/doc/api/index.php?chapter=9_1">http://pay.weixin.qq.com/wiki/doc/api/index.php?chapter=9_1</a>
+ * 接口文档：http://pay.weixin.qq.com/wiki/doc/api/index.php?chapter=9_1
  *
  * <b>应用场景</b>
  *
  * 除被扫支付场景以外，商户系统先调用该接口在微信支付服务后台生成预支付交易单，返回正确的预支付交易回话标识后再按扫码、JSAPI、APP等不同场景生成交易串调起支付。
  *
- * <b>接口链接</b>
- *
- * URL地址：<a href="https://api.mch.weixin.qq.com/pay/unifiedorder">https://api.mch.weixin.qq.com/pay/unifiedorder</a>
- * 
  * <b>是否需要证书</b>
  *
  * 不需要
@@ -97,79 +93,46 @@ public class UnifiedOrder {
         return sb.toString();
     }
 
-    /**
-     * @param appid the appid to set
-     */
     public void setAppid(String appid) {
         this.appid = appid;
     }
 
-    /**
-     * @param mch_id the mch_id to set
-     */
     public void setMch_id(String mch_id) {
         this.mch_id = mch_id;
     }
 
-    /**
-     * @param nonce_str the nonce_str to set
-     */
     public void setNonce_str(String nonce_str) {
         this.nonce_str = nonce_str;
     }
 
-    /**
-     * @param sign the sign to set
-     */
     public void setSign(String sign) {
         this.sign = sign;
     }
 
-    /**
-     * @param body the body to set
-     */
     public void setBody(String body) {
         this.body = body;
     }
 
-    /**
-     * @param out_trade_no the out_trade_no to set
-     */
     public void setOut_trade_no(String out_trade_no) {
         this.out_trade_no = out_trade_no;
     }
 
-    /**
-     * @param total_fee the total_fee to set
-     */
     public void setTotal_fee(String total_fee) {
         this.total_fee = total_fee;
     }
 
-    /**
-     * @param spbill_create_ip the spbill_create_ip to set
-     */
     public void setSpbill_create_ip(String spbill_create_ip) {
         this.spbill_create_ip = spbill_create_ip;
     }
 
-    /**
-     * @param notify_url the notify_url to set
-     */
     public void setNotify_url(String notify_url) {
         this.notify_url = notify_url;
     }
 
-    /**
-     * @param trade_type the trade_type to set
-     */
     public void setTrade_type(String trade_type) {
         this.trade_type = trade_type;
     }
 
-    /**
-     * @param openid the openid to set
-     */
     public void setOpenid(String openid) {
         this.openid = openid;
     }

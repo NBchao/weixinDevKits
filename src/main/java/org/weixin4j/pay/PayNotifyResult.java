@@ -2,6 +2,8 @@ package org.weixin4j.pay;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * 支付结果通用通知
@@ -10,6 +12,7 @@ import java.util.Map;
  *
  * @author qsyang
  */
+@XmlRootElement(name = "xml")
 public class PayNotifyResult {
 
     /**
@@ -79,338 +82,218 @@ public class PayNotifyResult {
         return map;
     }
 
-    /**
-     * @return the return_code
-     */
     public String getReturn_code() {
         return return_code;
     }
 
-    /**
-     * @param return_code the return_code to set
-     */
+    @XmlElement(name = "return_code")
     public void setReturn_code(String return_code) {
         this.return_code = return_code;
     }
 
-    /**
-     * @return the return_msg
-     */
     public String getReturn_msg() {
         return return_msg;
     }
 
-    /**
-     * @param return_msg the return_msg to set
-     */
+    @XmlElement(name = "return_msg")
     public void setReturn_msg(String return_msg) {
         this.return_msg = return_msg;
     }
 
-    /**
-     * @return the appid
-     */
     public String getAppid() {
         return appid;
     }
 
-    /**
-     * @param appid the appid to set
-     */
+    @XmlElement(name = "appid")
     public void setAppid(String appid) {
         this.appid = appid;
     }
 
-    /**
-     * @return the mch_id
-     */
     public String getMch_id() {
         return mch_id;
     }
 
-    /**
-     * @param mch_id the mch_id to set
-     */
+    @XmlElement(name = "mch_id")
     public void setMch_id(String mch_id) {
         this.mch_id = mch_id;
     }
 
-    /**
-     * @return the device_info
-     */
     public String getDevice_info() {
         return device_info;
     }
 
-    /**
-     * @param device_info the device_info to set
-     */
+    @XmlElement(name = "device_info")
     public void setDevice_info(String device_info) {
         this.device_info = device_info;
     }
 
-    /**
-     * @return the nonce_str
-     */
     public String getNonce_str() {
         return nonce_str;
     }
 
-    /**
-     * @param nonce_str the nonce_str to set
-     */
+    @XmlElement(name = "nonce_str")
     public void setNonce_str(String nonce_str) {
         this.nonce_str = nonce_str;
     }
 
-    /**
-     * @return the sign
-     */
     public String getSign() {
         return sign;
     }
 
-    /**
-     * @param sign the sign to set
-     */
+    @XmlElement(name = "sign")
     public void setSign(String sign) {
         this.sign = sign;
     }
 
-    /**
-     * @return the result_code
-     */
     public String getResult_code() {
         return result_code;
     }
 
-    /**
-     * @param result_code the result_code to set
-     */
+    @XmlElement(name = "result_code")
     public void setResult_code(String result_code) {
         this.result_code = result_code;
     }
 
-    /**
-     * @return the err_code
-     */
     public String getErr_code() {
         return err_code;
     }
 
-    /**
-     * @param err_code the err_code to set
-     */
+    @XmlElement(name = "err_code")
     public void setErr_code(String err_code) {
         this.err_code = err_code;
     }
 
-    /**
-     * @return the err_code_des
-     */
     public String getErr_code_des() {
         return err_code_des;
     }
 
-    /**
-     * @param err_code_des the err_code_des to set
-     */
+    @XmlElement(name = "err_code_des")
     public void setErr_code_des(String err_code_des) {
         this.err_code_des = err_code_des;
     }
 
-    /**
-     * @return the openid
-     */
     public String getOpenid() {
         return openid;
     }
 
-    /**
-     * @param openid the openid to set
-     */
+    @XmlElement(name = "openid")
     public void setOpenid(String openid) {
         this.openid = openid;
     }
 
-    /**
-     * @return the is_subscribe
-     */
     public String getIs_subscribe() {
         return is_subscribe;
     }
 
-    /**
-     * @param is_subscribe the is_subscribe to set
-     */
+    @XmlElement(name = "is_subscribe")
     public void setIs_subscribe(String is_subscribe) {
         this.is_subscribe = is_subscribe;
     }
 
-    /**
-     * @return the trade_type
-     */
     public String getTrade_type() {
         return trade_type;
     }
 
-    /**
-     * @param trade_type the trade_type to set
-     */
+    @XmlElement(name = "trade_type")
     public void setTrade_type(String trade_type) {
         this.trade_type = trade_type;
     }
 
-    /**
-     * @return the bank_type
-     */
     public String getBank_type() {
         return bank_type;
     }
 
-    /**
-     * @param bank_type the bank_type to set
-     */
+    @XmlElement(name = "bank_type")
     public void setBank_type(String bank_type) {
         this.bank_type = bank_type;
     }
 
-    /**
-     * @return the total_fee
-     */
     public String getTotal_fee() {
         return total_fee;
     }
 
-    /**
-     * @param total_fee the total_fee to set
-     */
+    @XmlElement(name = "total_fee")
     public void setTotal_fee(String total_fee) {
         this.total_fee = total_fee;
     }
 
-    /**
-     * @return the fee_type
-     */
     public String getFee_type() {
         return fee_type;
     }
 
-    /**
-     * @param fee_type the fee_type to set
-     */
+    @XmlElement(name = "fee_type")
     public void setFee_type(String fee_type) {
         this.fee_type = fee_type;
     }
 
-    /**
-     * @return the cash_fee
-     */
     public String getCash_fee() {
         return cash_fee;
     }
 
-    /**
-     * @param cash_fee the cash_fee to set
-     */
+    @XmlElement(name = "cash_fee")
     public void setCash_fee(String cash_fee) {
         this.cash_fee = cash_fee;
     }
 
-    /**
-     * @return the cash_fee_type
-     */
     public String getCash_fee_type() {
         return cash_fee_type;
     }
 
-    /**
-     * @param cash_fee_type the cash_fee_type to set
-     */
+    @XmlElement(name = "cash_fee_type")
     public void setCash_fee_type(String cash_fee_type) {
         this.cash_fee_type = cash_fee_type;
     }
 
-    /**
-     * @return the coupon_fee
-     */
     public String getCoupon_fee() {
         return coupon_fee;
     }
 
-    /**
-     * @param coupon_fee the coupon_fee to set
-     */
+    @XmlElement(name = "coupon_fee")
     public void setCoupon_fee(String coupon_fee) {
         this.coupon_fee = coupon_fee;
     }
 
-    /**
-     * @return the coupon_count
-     */
     public String getCoupon_count() {
         return coupon_count;
     }
 
-    /**
-     * @param coupon_count the coupon_count to set
-     */
+    @XmlElement(name = "coupon_count")
     public void setCoupon_count(String coupon_count) {
         this.coupon_count = coupon_count;
     }
 
-    /**
-     * @return the transaction_id
-     */
     public String getTransaction_id() {
         return transaction_id;
     }
 
-    /**
-     * @param transaction_id the transaction_id to set
-     */
+    @XmlElement(name = "transaction_id")
     public void setTransaction_id(String transaction_id) {
         this.transaction_id = transaction_id;
     }
 
-    /**
-     * @return the out_trade_no
-     */
     public String getOut_trade_no() {
         return out_trade_no;
     }
 
-    /**
-     * @param out_trade_no the out_trade_no to set
-     */
+    @XmlElement(name = "out_trade_no")
     public void setOut_trade_no(String out_trade_no) {
         this.out_trade_no = out_trade_no;
     }
 
-    /**
-     * @return the attach
-     */
     public String getAttach() {
         return attach;
     }
 
-    /**
-     * @param attach the attach to set
-     */
+    @XmlElement(name = "attach")
     public void setAttach(String attach) {
         this.attach = attach;
     }
 
-    /**
-     * @return the time_end
-     */
     public String getTime_end() {
         return time_end;
     }
 
-    /**
-     * @param time_end the time_end to set
-     */
+    @XmlElement(name = "time_end")
     public void setTime_end(String time_end) {
         this.time_end = time_end;
     }

@@ -17,7 +17,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.weixin4j.message;
+package org.weixin4j.message.output;
+
+import org.weixin4j.message.Image;
+import org.weixin4j.message.OutputMessage;
 
 /**
  * 这个类实现了<tt>OutputMessage</tt>，用来回复图片消息
@@ -83,5 +86,20 @@ public class ImageOutputMessage extends OutputMessage {
      */
     public void setImage(Image image) {
         this.Image = image;
+    }
+
+    @Override
+    public String toXML() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<xml>");
+        sb.append("<ToUserName><![CDATA[").append(this.getToUserName()).append("]]></ToUserName>");
+        sb.append("<FromUserName><![CDATA[").append(this.getFromUserName()).append("]]></FromUserName>");
+        sb.append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>");
+        sb.append("<MsgType><![CDATA[" + this.MsgType + "]]></MsgType>");
+        sb.append("<Image>");
+        sb.append("<MediaId><![CDATA[").append(this.getImage().getMediaId()).append("]]></MediaId>");
+        sb.append("</Image>");
+        sb.append("</xml>");
+        return sb.toString();
     }
 }

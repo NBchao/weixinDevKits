@@ -17,12 +17,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.weixin4j.message;
+package org.weixin4j.message.output;
+
+import org.weixin4j.message.OutputMessage;
 
 /**
  * 这个类实现了<tt>OutputMessage</tt>，用来回复文本消息
  *
- * <p>提供了获取文本内容<code>getContent()</code>等主要方法.</p>
+ * <p>
+ * 提供了获取文本内容<code>getContent()</code>等主要方法.</p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
@@ -54,6 +57,7 @@ public class TextOutputMessage extends OutputMessage {
 
     /**
      * 获取 消息类型
+     *
      * @return 消息类型
      */
     @Override
@@ -63,6 +67,7 @@ public class TextOutputMessage extends OutputMessage {
 
     /**
      * 获取 文本消息
+     *
      * @return 文本消息
      */
     public String getContent() {
@@ -71,9 +76,23 @@ public class TextOutputMessage extends OutputMessage {
 
     /**
      * 设置 文本消息
+     *
      * @param content 文本消息
      */
     public void setContent(String content) {
         Content = content;
+    }
+
+    @Override
+    public String toXML() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<xml>");
+        sb.append("<ToUserName><![CDATA[").append(this.getToUserName()).append("]]></ToUserName>");
+        sb.append("<FromUserName><![CDATA[").append(this.getFromUserName()).append("]]></FromUserName>");
+        sb.append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>");
+        sb.append("<MsgType><![CDATA[" + this.MsgType + "]]></MsgType>");
+        sb.append("<Content><![CDATA[").append(this.getContent()).append("]]></Content>");
+        sb.append("</xml>");
+        return sb.toString();
     }
 }

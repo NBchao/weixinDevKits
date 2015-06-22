@@ -22,7 +22,8 @@ package org.weixin4j.message;
 /**
  * 微信发送被动响应消息的抽象类
  *
- * <p>应用程序需要定义一个子类，来实现具体方法</p>
+ * <p>
+ * 应用程序需要定义一个子类，来实现具体方法</p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
@@ -74,4 +75,23 @@ public abstract class OutputMessage implements java.io.Serializable {
      * @return 消息类型
      */
     public abstract String getMsgType();
+
+    /**
+     * 将对象转换为xml字符串
+     *
+     * @return 对象xml字符串
+     */
+    public abstract String toXML();
+
+    public void setToUserName(String ToUserName) {
+        this.ToUserName = ToUserName;
+    }
+
+    public void setFromUserName(String FromUserName) {
+        this.FromUserName = FromUserName;
+    }
+
+    public void setCreateTime(Long CreateTime) {
+        this.CreateTime = CreateTime;
+    }
 }

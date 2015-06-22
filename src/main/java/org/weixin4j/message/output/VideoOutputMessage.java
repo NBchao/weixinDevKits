@@ -17,7 +17,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.weixin4j.message;
+package org.weixin4j.message.output;
+
+import org.weixin4j.message.Video;
+import org.weixin4j.message.OutputMessage;
 
 /**
  * 这个类实现了<tt>OutputMessage</tt>，用来回复视频消息
@@ -83,5 +86,22 @@ public class VideoOutputMessage extends OutputMessage {
      */
     public void setVideo(Video video) {
         Video = video;
+    }
+
+    @Override
+    public String toXML() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<xml>");
+        sb.append("<ToUserName><![CDATA[").append(this.getToUserName()).append("]]></ToUserName>");
+        sb.append("<FromUserName><![CDATA[").append(this.getFromUserName()).append("]]></FromUserName>");
+        sb.append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>");
+        sb.append("<MsgType><![CDATA[" + this.MsgType + "]]></MsgType>");
+        sb.append("<Video>");
+        sb.append("<MediaId><![CDATA[").append(this.getVideo().getMediaId()).append("]]></MediaId>");
+        sb.append("<Title><![CDATA[").append(this.getVideo().getTitle()).append("]]></Title>");
+        sb.append("<Description><![CDATA[").append(this.getVideo().getDescription()).append("]]></Description>");
+        sb.append("</Video>");
+        sb.append("</xml>");
+        return sb.toString();
     }
 }

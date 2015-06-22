@@ -1,11 +1,15 @@
 package org.weixin4j.pay;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * 统一下单结果
  *
  * @author qsyang
  * @version 1.0
  */
+@XmlRootElement(name = "xml")
 public class UnifiedOrderResult {
 
     /**
@@ -62,6 +66,7 @@ public class UnifiedOrderResult {
         return return_code;
     }
 
+    @XmlElement(name = "return_code")
     public void setReturn_code(String return_code) {
         this.return_code = return_code;
     }
@@ -70,6 +75,7 @@ public class UnifiedOrderResult {
         return return_msg;
     }
 
+    @XmlElement(name = "return_msg")
     public void setReturn_msg(String return_msg) {
         this.return_msg = return_msg;
     }
@@ -78,6 +84,7 @@ public class UnifiedOrderResult {
         return appid;
     }
 
+    @XmlElement(name = "appid")
     public void setAppid(String appid) {
         this.appid = appid;
     }
@@ -86,6 +93,7 @@ public class UnifiedOrderResult {
         return mch_id;
     }
 
+    @XmlElement(name = "mch_id")
     public void setMch_id(String mch_id) {
         this.mch_id = mch_id;
     }
@@ -94,6 +102,7 @@ public class UnifiedOrderResult {
         return device_info;
     }
 
+    @XmlElement(name = "device_info")
     public void setDevice_info(String device_info) {
         this.device_info = device_info;
     }
@@ -102,6 +111,7 @@ public class UnifiedOrderResult {
         return nonce_str;
     }
 
+    @XmlElement(name = "nonce_str")
     public void setNonce_str(String nonce_str) {
         this.nonce_str = nonce_str;
     }
@@ -110,6 +120,7 @@ public class UnifiedOrderResult {
         return sign;
     }
 
+    @XmlElement(name = "sign")
     public void setSign(String sign) {
         this.sign = sign;
     }
@@ -118,6 +129,7 @@ public class UnifiedOrderResult {
         return result_code;
     }
 
+    @XmlElement(name = "result_code")
     public void setResult_code(String result_code) {
         this.result_code = result_code;
     }
@@ -126,6 +138,7 @@ public class UnifiedOrderResult {
         return err_code;
     }
 
+    @XmlElement(name = "err_code")
     public void setErr_code(String err_code) {
         this.err_code = err_code;
     }
@@ -134,6 +147,7 @@ public class UnifiedOrderResult {
         return err_code_des;
     }
 
+    @XmlElement(name = "err_code_des")
     public void setErr_code_des(String err_code_des) {
         this.err_code_des = err_code_des;
     }
@@ -142,6 +156,7 @@ public class UnifiedOrderResult {
         return trade_type;
     }
 
+    @XmlElement(name = "trade_type")
     public void setTrade_type(String trade_type) {
         this.trade_type = trade_type;
     }
@@ -150,6 +165,7 @@ public class UnifiedOrderResult {
         return prepay_id;
     }
 
+    @XmlElement(name = "prepay_id")
     public void setPrepay_id(String prepay_id) {
         this.prepay_id = prepay_id;
     }
@@ -158,6 +174,7 @@ public class UnifiedOrderResult {
         return code_url;
     }
 
+    @XmlElement(name = "code_url")
     public void setCode_url(String code_url) {
         this.code_url = code_url;
     }

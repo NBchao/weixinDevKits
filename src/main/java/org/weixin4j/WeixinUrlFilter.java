@@ -19,18 +19,8 @@
  */
 package org.weixin4j;
 
-import org.weixin4j.message.Articles;
-import org.weixin4j.message.OutputMessage;
-import org.weixin4j.message.TextOutputMessage;
-import org.weixin4j.spi.IMessageHandler;
-import org.weixin4j.spi.InputMessage;
 import org.weixin4j.util.TokenUtil;
-import org.weixin4j.util.XStreamFactory;
-import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Date;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -40,23 +30,17 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.weixin4j.spi.PicList;
+import org.weixin4j.spi.IMessageHandler;
+import org.weixin4j.spi.HandlerFactory;
 
 /**
- * <p>
- * Title: 微信公众平台接受消息拦截器
- * </p>
+ * Title: 微信公众平台接受消息默认拦截器
  *
- * <p>
  * Description: 拦截Url http://www.weixin4j.org/api/vzhanqun
- * </p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
 public class WeixinUrlFilter implements Filter {
-
-    private static IMessageHandler messageHandler = null;
-    private static String defaultHandler = "org.weixin4j.spi.DefaultMessageHandler";
 
     @Override
     public void init(FilterConfig config) throws ServletException {
@@ -75,29 +59,31 @@ public class WeixinUrlFilter implements Filter {
             System.out.println("获得微信请求:" + request.getMethod() + " 方式");
             System.out.println("微信请求URL:" + request.getServletPath());
         }
+        //消息来源可靠性验证
+        String signature = request.getParameter("signature");// 微信加密签名
+        String timestamp = request.getParameter("timestamp");// 时间戳
+        String nonce = request.getParameter("nonce");       // 随机数
+        //Token为weixin4j.properties中配置的Token
+        String token = TokenUtil.get();
         if (isGet) {
             //1.验证消息真实性
             //http://mp.weixin.qq.com/wiki/index.php?title=验证消息真实性
             //URL为http://www.weixin4j.org/api/公众号
             //成为开发者验证
-            doGet(request, response);
+            String echostr = request.getParameter("echostr");   //
+            //确认此次GET请求来自微信服务器，原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败
+            if (TokenUtil.checkSignature(token, signature, timestamp, nonce)) {
+                response.getWriter().write(echostr);
+            }
         } else {
+            //确认此次GET请求来自微信服务器，原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败
+            if (!TokenUtil.checkSignature(token, signature, timestamp, nonce)) {
+                //消息不可靠，直接返回
+                response.getWriter().write("");
+                return;
+            }
             //用户每次向公众号发送消息、或者产生自定义菜单点击事件时，响应URL将得到推送
             doPost(request, response);
-        }
-    }
-
-    //开发者提交信息后，微信服务器将发送GET请求到填写的URL上
-    private void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String signature = request.getParameter("signature");// 微信加密签名
-        String timestamp = request.getParameter("timestamp");// 时间戳
-        String nonce = request.getParameter("nonce");       // 随机数
-        String echostr = request.getParameter("echostr");   //
-        //Token为weixin4j.properties中配置的Token
-        String token = TokenUtil.get();
-        //确认此次GET请求来自微信服务器，原样返回echostr参数内容，则接入生效，成为开发者成功，否则接入失败
-        if (TokenUtil.checkSignature(token, signature, timestamp, nonce)) {
-            response.getWriter().write(echostr);
         }
     }
 
@@ -105,110 +91,23 @@ public class WeixinUrlFilter implements Filter {
     //用户在关注与取消关注公众号时，微信会把这个事件推送到开发者填写的URL
     //用户每次发送语音给公众号时，微信会在推送的语音消息XML数据包中，增加一个Recongnition字段
     private void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        InputMessage inputMsg = null;
-        OutputMessage outputMsg = null;
         try {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("text/xml");
-            if (messageHandler == null) {
-                try {
-                    //获取
-                    defaultHandler = Configuration.getProperty("weixin4j.handler", defaultHandler);
-                    if (Configuration.isDebug()) {
-                        System.out.println("微信接受消息处理Hanle:" + defaultHandler);
-                    }
-                    // 加载处理器
-                    Class<?> clazz = Class.forName(defaultHandler);
-                    try {
-                        messageHandler = (IMessageHandler) clazz.newInstance();
-                    } catch (Exception ex) {
-                        System.out.println("初始化 MessageHandler 异常：");
-                        ex.printStackTrace();
-                    }
-                } catch (ClassNotFoundException ex) {
-                    System.out.println("找不到: " + defaultHandler + " 类!");
-                    ex.printStackTrace();
-                    throw ex;
-                }
-            }
-            if (Configuration.isDebug()) {
-                System.out.println("IMessageHandler创建成功!");
-            }
             //获取POST流
             ServletInputStream in = request.getInputStream();
             if (Configuration.isDebug()) {
-                System.out.println("获取POST流成功!");
+                System.out.println("接收到微信输入流,准备处理...");
             }
-            //将POST流转换为XStream对象
-            XStream xs = XStreamFactory.init(false);
-            if (Configuration.isDebug()) {
-                System.out.println("将POST流转换为XStream对象成功!");
-            }
-            //将指定节点下的xml节点数据转换为对象
-            xs.alias("xml", InputMessage.class);
-            xs.alias("item", PicList.class);
-            if (Configuration.isDebug()) {
-                System.out.println("将指定节点下的xml节点数据转换为对象成功!");
-            }
-            //将流转换为字符串
-            String xmlMsg = XStreamFactory.inputStream2String(in);
-            if (Configuration.isDebug()) {
-                System.out.println("获取POST的消息:[" + xmlMsg + "]");
-            }
-            //将xml内容转换为InputMessage对象
-            inputMsg = (InputMessage) xs.fromXML(xmlMsg);
-
-            // 取得消息类型
-            String MsgType = inputMsg.getMsgType();
-            if (Configuration.isDebug()) {
-                System.out.println("POST的消息类型:[" + MsgType + "]");
-            }
-            //获取消息处理方法
-            Method mt = messageHandler.getClass().getMethod(MsgType + "TypeMsg", InputMessage.class);
-            //调用处理方法，返回输出流对象
-            outputMsg = (OutputMessage) mt.invoke(messageHandler, inputMsg);
-            //如果输出流为null，则说明内部异常
-            if (outputMsg == null) {
-                //告知用户错误信息
-                outputMsg = new TextOutputMessage();
-                ((TextOutputMessage) outputMsg).setContent("系统错误，请联系管理员!");
-            }
+            IMessageHandler messageHandler = HandlerFactory.getMessageHandler();
+            //处理输入消息，返回结果
+            String xml = messageHandler.invoke(in);
+            //返回结果
+            response.getWriter().write(xml);
         } catch (Exception ex) {
             ex.printStackTrace();
-            outputMsg = new TextOutputMessage();
-            ((TextOutputMessage) outputMsg).setContent("系统错误!");
+            response.getWriter().write("");
         }
-        try {
-            setOutputMsgInfo(outputMsg, inputMsg);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-        }
-        // 把发送发送对象转换为xml输出
-        XStream xs = XStreamFactory.init(true);
-        xs.alias("xml", outputMsg.getClass());
-        xs.alias("item", Articles.class);
-        String xml = xs.toXML(outputMsg);
-        if (Configuration.isDebug()) {
-            System.out.println("POST输出消息:[" + xml + "]");
-        }
-        response.getWriter().write(xml);
-    }
-
-    //设置详细信息
-    private static void setOutputMsgInfo(OutputMessage oms, InputMessage msg) throws Exception {
-        // 设置发送信息
-        Class<?> outMsg = oms.getClass().getSuperclass();
-        Field CreateTime = outMsg.getDeclaredField("CreateTime");
-        Field ToUserName = outMsg.getDeclaredField("ToUserName");
-        Field FromUserName = outMsg.getDeclaredField("FromUserName");
-
-        ToUserName.setAccessible(true);
-        CreateTime.setAccessible(true);
-        FromUserName.setAccessible(true);
-
-        CreateTime.set(oms, new Date().getTime());
-        ToUserName.set(oms, msg.getFromUserName());
-        FromUserName.set(oms, msg.getToUserName());
     }
 
     @Override

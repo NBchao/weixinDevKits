@@ -17,7 +17,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.weixin4j.message;
+package org.weixin4j.message.output;
+
+import org.weixin4j.message.Voice;
+import org.weixin4j.message.OutputMessage;
 
 /**
  * 这个类实现了<tt>OutputMessage</tt>，用来回复语音消息
@@ -78,5 +81,20 @@ public class VoiceOutputMessage extends OutputMessage {
      */
     public void setVoice(Voice voice) {
         Voice = voice;
+    }
+
+    @Override
+    public String toXML() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<xml>");
+        sb.append("<ToUserName><![CDATA[").append(this.getToUserName()).append("]]></ToUserName>");
+        sb.append("<FromUserName><![CDATA[").append(this.getFromUserName()).append("]]></FromUserName>");
+        sb.append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>");
+        sb.append("<MsgType><![CDATA[" + this.MsgType + "]]></MsgType>");
+        sb.append("<Voice>");
+        sb.append("<MediaId><![CDATA[").append(this.getVoice().getMediaId()).append("]]></MediaId>");
+        sb.append("</Voice>");
+        sb.append("</xml>");
+        return sb.toString();
     }
 }

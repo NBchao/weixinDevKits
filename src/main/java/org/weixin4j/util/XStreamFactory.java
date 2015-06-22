@@ -19,16 +19,9 @@
  */
 package org.weixin4j.util;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.core.util.QuickWriter;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.xml.DomDriver;
-import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
-import com.thoughtworks.xstream.io.xml.XppDriver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 
 /**
  * 将微信POST的流转换为XStream，然后转换为InputMessage对象
@@ -36,39 +29,6 @@ import java.io.Writer;
  * @author weixin4j<weixin4j@ansitech.com>
  */
 public class XStreamFactory {
-
-    protected static String PREFIX_CDATA = "<![CDATA[";
-    protected static String SUFFIX_CDATA = "]]>";
-
-    /**
-     * 初始化XStream 可支持某一字段可以加入CDATA标签 如果需要某一字段使用原文
-     * 就需要在String类型的text的头加上"<![CDATA["和结尾处加上"]]>"标签， 以供XStream输出时进行识别
-     *
-     * @param isAddCDATA 是否支持CDATA标签
-     * @return XStream
-     */
-    public static XStream init(boolean isAddCDATA) {
-        XStream xstream;
-        if (isAddCDATA) {
-            xstream = new XStream(new XppDriver() {
-                @Override
-                public HierarchicalStreamWriter createWriter(Writer out) {
-                    return new PrettyPrintWriter(out) {
-                        @Override
-                        protected void writeText(QuickWriter writer, String text) {
-                            if (!text.startsWith(PREFIX_CDATA)) {
-                                text = PREFIX_CDATA + text + SUFFIX_CDATA;
-                            }
-                            writer.write(text);
-                        }
-                    };
-                }
-            });
-        } else {
-            xstream = new XStream(new DomDriver());
-        }
-        return xstream;
-    }
 
     /**
      * 将输入流转读取成字符串

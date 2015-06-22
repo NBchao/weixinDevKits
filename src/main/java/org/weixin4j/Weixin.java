@@ -19,7 +19,6 @@
  */
 package org.weixin4j;
 
-import com.thoughtworks.xstream.XStream;
 import org.weixin4j.http.OAuth;
 import org.weixin4j.http.OAuthToken;
 import org.weixin4j.http.Response;
@@ -31,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -41,6 +41,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.weixin4j.http.Attachment;
@@ -48,7 +51,6 @@ import org.weixin4j.http.HttpClient;
 import org.weixin4j.message.MediaType;
 import org.weixin4j.pay.UnifiedOrder;
 import org.weixin4j.pay.UnifiedOrderResult;
-import org.weixin4j.util.XStreamFactory;
 
 /**
  * 微信平台基础支持对象
@@ -1058,11 +1060,13 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         Response res = http.postXml("https://api.mch.weixin.qq.com/pay/unifiedorder", xmlPost);
         //获取微信平台下单接口返回数据
         String xmlResult = res.asString();
-        //将返回结果，转换为统一下单返回结果对象
-        XStream xsIn = XStreamFactory.init(false);
-        //设置根对象
-        xsIn.alias("xml", UnifiedOrderResult.class);
-        //返回结果
-        return (UnifiedOrderResult) xsIn.fromXML(xmlResult);
+        try {
+            JAXBContext context = JAXBContext.newInstance(UnifiedOrderResult.class);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            UnifiedOrderResult result = (UnifiedOrderResult) unmarshaller.unmarshal(new StringReader(xmlResult));
+            return result;
+        } catch (JAXBException ex) {
+            return null;
+        }
     }
 }

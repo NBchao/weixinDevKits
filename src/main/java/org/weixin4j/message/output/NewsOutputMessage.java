@@ -17,15 +17,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.weixin4j.message;
+package org.weixin4j.message.output;
 
+import org.weixin4j.message.Articles;
+import org.weixin4j.message.OutputMessage;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 这个类实现了<tt>OutputMessage</tt>，用来回复图文消息
  *
- * <p>提供了获取多条图文消息信息<code>getArticles()</code>等主要方法.</p>
+ * <p>
+ * 提供了获取多条图文消息信息<code>getArticles()</code>等主要方法.</p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  */
@@ -85,5 +88,28 @@ public class NewsOutputMessage extends OutputMessage {
             ArticleCount = articles.size();
         }
         Articles = articles;
+    }
+
+    @Override
+    public String toXML() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<xml>");
+        sb.append("<ToUserName><![CDATA[").append(this.getToUserName()).append("]]></ToUserName>");
+        sb.append("<FromUserName><![CDATA[").append(this.getFromUserName()).append("]]></FromUserName>");
+        sb.append("<CreateTime>").append(this.getCreateTime()).append("</CreateTime>");
+        sb.append("<MsgType><![CDATA[" + this.MsgType + "]]></MsgType>");
+        sb.append("<ArticleCount>").append(this.ArticleCount).append("</ArticleCount>");
+        sb.append("<Articles>");
+        for (Articles article : Articles) {
+            sb.append("<item>");
+            sb.append("<Title><![CDATA[").append(article.getTitle()).append("]]></Title>");
+            sb.append("<Description><![CDATA[").append(article.getDescription()).append("]]></Description>");
+            sb.append("<PicUrl><![CDATA[").append(article.getPicUrl()).append("]]></PicUrl>");
+            sb.append("<Url><![CDATA[").append(article.getUrl()).append("]]></Url>");
+            sb.append("</item>");
+        }
+        sb.append("</Articles>");
+        sb.append("</xml>");
+        return sb.toString();
     }
 }
