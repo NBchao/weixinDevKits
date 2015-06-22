@@ -442,7 +442,7 @@ public class HttpClient implements java.io.Serializable {
      * @throws NoSuchProviderException
      * @throws KeyManagementException
      */
-    public Attachment download(String url) throws IOException,
+    public Attachment downloadHttps(String url) throws IOException,
             NoSuchAlgorithmException, KeyManagementException,
             NoSuchProviderException {
         //定义下载附件对象
@@ -492,5 +492,47 @@ public class HttpClient implements java.io.Serializable {
         } finally {
         }
         return attachment;
+    }
+
+    /**
+     * 下载附件
+     *
+     * @param url 附件地址
+     * @return 附件对象
+     * @throws IOException
+     */
+    public Attachment download(String url) throws IOException {
+        Attachment att = new Attachment();
+        URL _url = new URL(url);
+        HttpURLConnection http = (HttpURLConnection) _url.openConnection();
+        //设置头
+        setHttpHeader(http, "GET");
+        if (http.getContentType().equalsIgnoreCase("text/plain")) {
+            // 定义BufferedReader输入流来读取URL的响应  
+            InputStream in = http.getInputStream();
+            BufferedReader read = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            String valueString = null;
+            StringBuilder bufferRes = new StringBuilder();
+            while ((valueString = read.readLine()) != null) {
+                bufferRes.append(valueString);
+            }
+            in.close();
+            att.setError(bufferRes.toString());
+        } else {
+            BufferedInputStream bis = new BufferedInputStream(http.getInputStream());
+            String ds = http.getHeaderField("Content-disposition");
+            String fullName = ds.substring(ds.indexOf("filename=\"") + 10, ds.length() - 1);
+            String relName = fullName.substring(0, fullName.lastIndexOf("."));
+            String suffix = fullName.substring(relName.length() + 1);
+
+            att.setFullName(fullName);
+            att.setFileName(relName);
+            att.setSuffix(suffix);
+            att.setContentLength(http.getHeaderField("Content-Length"));
+            att.setContentType(http.getHeaderField("Content-Type"));
+
+            att.setFileStream(bis);
+        }
+        return att;
     }
 }

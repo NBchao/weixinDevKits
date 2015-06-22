@@ -40,8 +40,8 @@ public class InputMessage {
     // 图片消息
     private String PicUrl;
     // 位置消息
-    private String LocationX;
-    private String LocationY;
+    private String Location_X;
+    private String Location_Y;
     private Long Scale;
     private String Label;
     // 链接消息
@@ -130,20 +130,20 @@ public class InputMessage {
         PicUrl = picUrl;
     }
 
-    public String getLocationX() {
-        return LocationX;
+    public String getLocation_X() {
+        return Location_X;
     }
 
-    public void setLocationX(String locationX) {
-        LocationX = locationX;
+    public void setLocation_X(String locationX) {
+        Location_X = locationX;
     }
 
-    public String getLocationY() {
-        return LocationY;
+    public String getLocation_Y() {
+        return Location_Y;
     }
 
-    public void setLocationY(String locationY) {
-        LocationY = locationY;
+    public void setLocationY(String location_Y) {
+        Location_Y = location_Y;
     }
 
     public Long getScale() {
