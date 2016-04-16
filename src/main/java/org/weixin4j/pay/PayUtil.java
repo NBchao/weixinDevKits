@@ -37,6 +37,7 @@ public class PayUtil {
      * @param appKey 商户支付密钥
      * @return 支付对象
      */
+    @Deprecated
     public static WXPay getChooseWXPay(String appId, String jsapi_ticket, WXPackage packages, String url, String paternerKey, String appKey) {
         return new WXPay(appId, jsapi_ticket, packages, url, paternerKey, appKey);
     }

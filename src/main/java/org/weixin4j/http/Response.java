@@ -24,21 +24,25 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import javax.net.ssl.HttpsURLConnection;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
- * <p>Title: </p>
+ * <p>
+ * Title: https的输出流</p>
  *
- * <p>Description: </p>
+ * <p>
+ * Description: </p>
  *
  * @author weixin4j<weixin4j@ansitech.com>
  * @version 1.0
  */
 public class Response {
 
-    private HttpsURLConnection con;
+    private HttpsURLConnection https;
+    private HttpURLConnection http;
     private int status;
     private InputStream is;
     private String responseAsString = null;
@@ -47,24 +51,26 @@ public class Response {
     public Response() {
     }
 
-    public Response(HttpsURLConnection con) throws IOException {
-        this.con = con;
-        this.status = con.getResponseCode();
-        if (null == (is = con.getErrorStream())) {
-            is = con.getInputStream();
+    public Response(HttpsURLConnection https) throws IOException {
+        this.https = https;
+        this.status = https.getResponseCode();
+        if (null == (is = https.getErrorStream())) {
+            is = https.getInputStream();
+        }
+    }
+
+    public Response(HttpURLConnection http) throws IOException {
+        this.http = http;
+        this.status = http.getResponseCode();
+        if (null == (is = http.getErrorStream())) {
+            is = http.getInputStream();
         }
     }
 
     /**
-     * Returns the response stream.<br> This method cannot be called after
-     * calling asString() or asDcoument()<br> It is suggested to call
-     * disconnect() after consuming the stream.
+     * 转换为输出流
      *
-     * Disconnects the internal HttpURLConnection silently.
-     *
-     * @return response body stream
-     * @throws WeixinException
-     * @see #disconnect()
+     * @return 输出流
      */
     public InputStream asStream() {
         if (streamConsumed) {
@@ -95,7 +101,14 @@ public class Response {
                 }
                 this.responseAsString = buf.toString();
                 stream.close();
-                con.disconnect();
+                //输出流读取完毕，关闭连接
+                if (https != null) {
+                    https.disconnect();
+                }
+                //输出流读取完毕，关闭连接
+                if (http != null) {
+                    http.disconnect();
+                }
                 streamConsumed = true;
             } catch (NullPointerException npe) {
                 // don't remember in which case npe can be thrown
@@ -111,6 +124,7 @@ public class Response {
      * 将输出流转换为JSON对象
      *
      * @return JSONObject对象
+     * @throws org.weixin4j.WeixinException
      */
     public JSONObject asJSONObject() throws WeixinException {
         return JSONObject.fromObject(asString());
@@ -120,13 +134,16 @@ public class Response {
      * 将输出流转换为JSON对象
      *
      * @return JSONArray对象
+     * @throws org.weixin4j.WeixinException
      */
     public JSONArray asJSONArray() throws WeixinException {
         return JSONArray.fromObject(asString());
     }
 
     /**
-     * @return the status
+     * 获取响应状态
+     *
+     * @return 响应状态
      */
     public int getStatus() {
         return status;

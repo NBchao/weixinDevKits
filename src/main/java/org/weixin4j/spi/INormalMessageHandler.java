@@ -19,7 +19,6 @@
  */
 package org.weixin4j.spi;
 
-import org.weixin4j.message.event.EventMessage;
 import org.weixin4j.message.normal.TextInputMessage;
 import org.weixin4j.message.normal.ImageInputMessage;
 import org.weixin4j.message.normal.LinkInputMessage;

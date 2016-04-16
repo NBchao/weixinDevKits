@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.weixin4j.Configuration;
 import org.weixin4j.util.MapUtil;
 
 /**
@@ -88,9 +89,22 @@ public class SignUtil {
         Map<String, String> sortParams = MapUtil.sortAsc(M);
         //1.2 使用URL键值对的格式
         String string1 = MapUtil.mapJoin(sortParams, false);
+        if (Configuration.isDebug()) {
+            System.out.println("#1.生成字符串：");
+            System.out.println(string1);
+        }
         //拼接签名字符串
         String stringSignTemp = string1 + "&key=" + paternerKey;
+        if (Configuration.isDebug()) {
+            System.out.println("#2.连接商户key：");
+            System.out.println(stringSignTemp);
+        }
         //2.对string1进行MD5签名
-        return DigestUtils.md5Hex(stringSignTemp).toUpperCase();
+        String sign = DigestUtils.md5Hex(stringSignTemp).toUpperCase();
+        if (Configuration.isDebug()) {
+            System.out.println("#3.md5编码并转成大写：");
+            System.out.println("sign=" + sign);
+        }
+        return sign;
     }
 }

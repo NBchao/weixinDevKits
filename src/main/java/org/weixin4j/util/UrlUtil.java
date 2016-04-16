@@ -25,8 +25,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import org.weixin4j.misc.BASE64Decoder;
+import org.weixin4j.misc.BASE64Encoder;
 
 /**
  * 链接工具类

@@ -25,7 +25,7 @@ import org.weixin4j.http.Response;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import net.sf.json.JSONObject;
-import org.weixin4j.http.HttpClient;
+import org.weixin4j.http.HttpsClient;
 
 /**
  * 网页授权获取用户基本信息
@@ -48,11 +48,24 @@ public class OAuth2 extends WeixinSupport implements java.io.Serializable {
      * code作为换取access_token的票据，每次用户授权带上的code将不一样，code只能使用一次，5分钟未被使用自动过期。
      */
     private String _code;
+    /**
+     * 默认授权请求URL
+     */
+    private String authorize_url = "https://open.weixin.qq.com/connect/oauth2/authorize";
 
     /**
      * 网页授权基础支持
      */
     public OAuth2() {
+    }
+
+    /**
+     * 开放的网页授权基础支持
+     *
+     * @param authorize_url 第三方网页授权开发URL
+     */
+    public OAuth2(String authorize_url) {
+        this.authorize_url = authorize_url;
     }
 
     /**
@@ -117,7 +130,7 @@ public class OAuth2 extends WeixinSupport implements java.io.Serializable {
 
     public String getOAuth2CodeUrl(String appId, String returnUrl, String scope, String state) {
         try {
-            return "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + appId + "&redirect_uri=" + URLEncoder.encode(returnUrl, "UTF-8") + "&response_type=code&scope=" + scope + "&state=" + state + "#wechat_redirect";
+            return authorize_url + "?appid=" + appId + "&redirect_uri=" + URLEncoder.encode(returnUrl, "UTF-8") + "&response_type=code&scope=" + scope + "&state=" + state + "#wechat_redirect";
         } catch (UnsupportedEncodingException ex) {
             return "";
         }
@@ -168,7 +181,7 @@ public class OAuth2 extends WeixinSupport implements java.io.Serializable {
         //拼接参数
         String param = "?grant_type=" + grantType + "&appid=" + appId + "&secret=" + secret + "&code=" + code;
         //创建请求对象
-        HttpClient http = new HttpClient();
+        HttpsClient http = new HttpsClient();
         //调用获取access_token接口
         Response res = http.get("https://api.weixin.qq.com/sns/oauth2/access_token" + param);
         //根据请求结果判定，是否验证成功
@@ -208,7 +221,7 @@ public class OAuth2 extends WeixinSupport implements java.io.Serializable {
         //拼接参数
         String param = "?appid=" + this.oauth.getAppId() + "&refresh_token=" + this.oauth2Token.getRefresh_token() + "&grant_type=refresh_token";
         //创建请求对象
-        HttpClient http = new HttpClient();
+        HttpsClient http = new HttpsClient();
         //调用获取access_token接口
         Response res = http.get("https://api.weixin.qq.com/sns/oauth2/refresh_token" + param);
         //根据请求结果判定，是否验证成功
@@ -266,7 +279,7 @@ public class OAuth2 extends WeixinSupport implements java.io.Serializable {
         //拼接参数
         String param = "?access_token=" + this.oauth2Token.getAccess_token() + "&openid=" + this.oauth2Token.getOpenid() + "&lang=" + lang;
         //创建请求对象
-        HttpClient http = new HttpClient();
+        HttpsClient http = new HttpsClient();
         //调用获取access_token接口
         Response res = http.get("https://api.weixin.qq.com/sns/userinfo" + param);
         //根据请求结果判定，是否验证成功

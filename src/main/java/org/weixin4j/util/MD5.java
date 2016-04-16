@@ -20,7 +20,7 @@
 package org.weixin4j.util;
 
 import java.security.MessageDigest;
-import sun.misc.BASE64Encoder;
+import org.weixin4j.misc.BASE64Encoder;
 
 /**
  * MD5加密算法
