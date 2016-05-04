@@ -46,10 +46,12 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.StringUtils;
 import org.weixin4j.http.Attachment;
 import org.weixin4j.http.HttpClient;
 import org.weixin4j.http.HttpsClient;
 import org.weixin4j.message.MediaType;
+import org.weixin4j.pay.JsApiTicket;
 import org.weixin4j.pay.UnifiedOrder;
 import org.weixin4j.pay.UnifiedOrderResult;
 import org.weixin4j.pay.redpack.SendRedPack;
@@ -234,9 +236,8 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             //判断是否过期，如果已过期，则发送重新登录命令
             if (oauthToken == null) {
                 throw new WeixinException("oauthToken is null,you must call login or init first!");
-            } else {
-                //已过期
-                if (oauthToken.isExprexpired()) {
+            } else //已过期
+             if (oauthToken.isExprexpired()) {
                     //如果用户名和密码正确，则自动登录，否则返回异常
                     if (oauth != null) {
                         //自动重新发送登录请求
@@ -245,7 +246,6 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                         throw new WeixinException("oauth is null and oauthToken is exprexpired, please log in again!");
                     }
                 }
-            }
         }
     }
 
@@ -1043,6 +1043,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
      * @return 成功返回ticket，失败返回NULL
      * @throws WeixinException
      */
+    @Deprecated
     public String getJsApiTicket() throws WeixinException {
         //必须先调用检查登录方法
         checkLogin();
@@ -1067,6 +1068,38 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 if (ticket != null) {
                     return ticket.toString();
                 }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取jsapi_ticket对象，每次都返回最新
+     *
+     * @return 成功返回jsapi_ticket对象，失败返回NULL
+     * @throws WeixinException
+     */
+    public JsApiTicket getJsApi_Ticket() throws WeixinException {
+        //必须先调用检查登录方法
+        checkLogin();
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //调用获取jsapi_ticket接口
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + this.oauthToken.getAccess_token() + "&type=jsapi");
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        //成功返回如下JSON:
+        //{"errcode":0,"errmsg":"ok","ticket":"bxLdikRXVbTPdHSM05e5u5sUoXNKd8-41ZO3MhKoyN5OfkWITDGgnr2fwJ0m9E8NYzWKVZvdVtaUgWvsdshFKA","expires_in":7200}
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("获取jsapi_ticket返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            } else {
+                return new JsApiTicket(jsonObj.getString("ticket"), jsonObj.getInt("expires_in"));
             }
         }
         return null;
@@ -1104,11 +1137,28 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
     /**
      * 发送现金红包
      *
+     * <p>
+     * 使用weixin4j.properties的配置</p>
+     *
      * @param sendRedPack 现金红包对象
      * @return 发送现金红包返回结果对象
      * @throws org.weixin4j.WeixinException
      */
     public SendRedPackResult sendRedPack(SendRedPack sendRedPack) throws WeixinException {
+        return sendRedPack(sendRedPack, null, null, null);
+    }
+
+    /**
+     * 发送现金红包
+     *
+     * @param sendRedPack 现金红包对象
+     * @param partnerId 商户ID
+     * @param certPath 证书路径
+     * @param certSecret 证书密钥
+     * @return 发送现金红包返回结果对象
+     * @throws org.weixin4j.WeixinException
+     */
+    public SendRedPackResult sendRedPack(SendRedPack sendRedPack, String partnerId, String certPath, String certSecret) throws WeixinException {
         //将统一下单对象转成XML
         String xmlPost = sendRedPack.toXML();
         if (Configuration.isDebug()) {
@@ -1117,7 +1167,12 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         //创建请求对象
         HttpsClient http = new HttpsClient();
         //提交xml格式数据
-        Response res = http.postXml("https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack", xmlPost, true);
+        Response res;
+        if (StringUtils.isEmpty(partnerId) || StringUtils.isEmpty(certPath) || StringUtils.isEmpty(certSecret)) {
+            res = http.postXml("https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack", xmlPost, true);
+        } else {
+            res = http.postXml("https://api.mch.weixin.qq.com/mmpaymkttransfers/sendredpack", xmlPost, partnerId, certPath, certSecret);
+        }
         //获取微信平台下单接口返回数据
         String xmlResult = res.asString();
         try {
@@ -1128,5 +1183,41 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         } catch (JAXBException ex) {
             return null;
         }
+    }
+
+    /**
+     * 获取微信服务器IP地址
+     *
+     * @return 微信服务器IP地址列表
+     * @throws org.weixin4j.WeixinException
+     */
+    public List<String> getCallbackIp() throws WeixinException {
+        //必须先调用检查登录方法
+        checkLogin();
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //调用获取jsapi_ticket接口
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token=" + this.oauthToken.getAccess_token());
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        //成功返回如下JSON:
+        //{"ip_list":["127.0.0.1","127.0.0.1"]}
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("获取getCallbackIp返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            } else {
+                JSONArray ipList = jsonObj.getJSONArray("ip_list");
+                if (ipList != null) {
+                    //转换为List
+                    return ipList.subList(0, ipList.size());
+                }
+            }
+        }
+        return null;
     }
 }

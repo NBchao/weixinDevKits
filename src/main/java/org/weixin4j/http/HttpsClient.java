@@ -85,7 +85,7 @@ public class HttpsClient implements java.io.Serializable {
             System.out.println("URL POST 数据：" + jsonString);
         }
         //提交数据
-        return httpsRequest(url, _POST, jsonString, false);
+        return httpsRequest(url, _POST, jsonString, false, null, null, null);
     }
 
     /**
@@ -98,7 +98,7 @@ public class HttpsClient implements java.io.Serializable {
      * @throws WeixinException
      */
     public Response get(String url) throws WeixinException {
-        return httpsRequest(url, _GET, null, false);
+        return httpsRequest(url, _GET, null, false, null, null, null);
     }
 
     /**
@@ -110,7 +110,7 @@ public class HttpsClient implements java.io.Serializable {
      * @throws WeixinException
      */
     public Response postXml(String url, String xml) throws WeixinException {
-        return httpsRequest(url, _POST, xml, false);
+        return httpsRequest(url, _POST, xml, false, null, null, null);
     }
 
     /**
@@ -123,10 +123,26 @@ public class HttpsClient implements java.io.Serializable {
      * @throws WeixinException
      */
     public Response postXml(String url, String xml, boolean needCert) throws WeixinException {
-        return httpsRequest(url, _POST, xml, needCert);
+        String partnerId = Configuration.getProperty("weixin4j.pay.partner.id");
+        String certPath = Configuration.getProperty("weixin4j.http.cert.path");
+        String certSecret = Configuration.getProperty("weixin4j.http.cert.secret");
+        return httpsRequest(url, _POST, xml, needCert, partnerId, certPath, certSecret);
     }
 
-    
+    /**
+     * Post XML格式数据
+     *
+     * @param url 提交地址
+     * @param xml XML数据
+     * @param partnerId 商户ID
+     * @param certPath 证书地址
+     * @param certSecret 证书密钥
+     * @return 输出流对象
+     * @throws WeixinException
+     */
+    public Response postXml(String url, String xml, String partnerId, String certPath, String certSecret) throws WeixinException {
+        return httpsRequest(url, _POST, xml, true, partnerId, certPath, certSecret);
+    }
 
     /**
      * 通过https协议请求url
@@ -137,7 +153,7 @@ public class HttpsClient implements java.io.Serializable {
      * @return 响应流
      * @throws WeixinException
      */
-    private Response httpsRequest(String url, String method, String postData, boolean needCert)
+    private Response httpsRequest(String url, String method, String postData, boolean needCert, String partnerId, String certPath, String certSecret)
             throws WeixinException {
         Response res = null;
         OutputStream output;
@@ -148,7 +164,7 @@ public class HttpsClient implements java.io.Serializable {
             //判断https是否为空，如果为空返回null响应
             if (https != null) {
                 //设置Header信息，包括https证书
-                setHttpsHeader(https, method, needCert);
+                setHttpsHeader(https, method, needCert, partnerId, certPath, certSecret);
                 //判断是否需要提交数据
                 if (method.equals(_POST) && null != postData) {
                     //讲参数转换为字节提交
@@ -205,7 +221,7 @@ public class HttpsClient implements java.io.Serializable {
         return httpsUrlConnection;
     }
 
-    private void setHttpsHeader(HttpsURLConnection httpsUrlConnection, String method, boolean needCert)
+    private void setHttpsHeader(HttpsURLConnection httpsUrlConnection, String method, boolean needCert, String partnerId, String certPath, String certSecret)
             throws NoSuchAlgorithmException, KeyManagementException, NoSuchProviderException,
             IOException, KeyStoreException, CertificateException, UnrecoverableKeyException {
         //不需要维修证书，则使用默认证书
@@ -221,16 +237,12 @@ public class HttpsClient implements java.io.Serializable {
             //设置ssl证书
             httpsUrlConnection.setSSLSocketFactory(ssf);
         } else {
-            String partnerId = Configuration.getProperty("weixin4j.pay.partner.id");
-            //使用微信证书
-            String certPath = Configuration.getProperty("weixin4j.http.cert.path");
-            String certSecret = Configuration.getProperty("weixin4j.http.cert.secret");
             //指定读取证书格式为PKCS12
             KeyStore keyStore = KeyStore.getInstance("PKCS12");
             //读取本机存放的PKCS12证书文件
             FileInputStream instream = new FileInputStream(new File(certPath));
             try {
-                //指定PKCS12的密码(商户ID)
+                //指定PKCS12的密码
                 keyStore.load(instream, partnerId.toCharArray());
             } finally {
                 instream.close();
@@ -291,7 +303,7 @@ public class HttpsClient implements java.io.Serializable {
             //创建https请求连接
             https = getHttpsURLConnection(url);
             //设置header和ssl证书
-            setHttpsHeader(https, _POST, false);
+            setHttpsHeader(https, _POST, false, null, null, null);
             //不缓存
             https.setUseCaches(false);
             //保持连接
@@ -384,7 +396,7 @@ public class HttpsClient implements java.io.Serializable {
             //创建https请求连接
             https = getHttpsURLConnection(url);
             //设置header和ssl证书
-            setHttpsHeader(https, _POST, false);
+            setHttpsHeader(https, _POST, false, null, null, null);
             //不缓存
             https.setUseCaches(false);
             //保持连接

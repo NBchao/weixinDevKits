@@ -43,7 +43,9 @@ public enum TicketType {
     }
 
     /**
-     * @return the msgType
+     * 返回二维码类型值
+     *
+     * @return the TicketType
      */
     @Override
     public String toString() {

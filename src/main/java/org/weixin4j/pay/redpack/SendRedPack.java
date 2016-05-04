@@ -208,6 +208,7 @@ public class SendRedPack {
         return nick_name;
     }
 
+    @Deprecated
     public void setNick_name(String nick_name) {
         this.nick_name = nick_name;
     }
