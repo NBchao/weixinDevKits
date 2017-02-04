@@ -19,9 +19,9 @@
  */
 package org.weixin4j.http;
 
+import com.alibaba.fastjson.JSONObject;
 import org.weixin4j.WeixinException;
 import java.util.Date;
-import net.sf.json.JSONObject;
 
 /**
  * 网页授权对象
@@ -29,11 +29,11 @@ import net.sf.json.JSONObject;
  * @author weixin4j<weixin4j@ansitech.com>
  * @version 1.0
  */
-public class OAuth2Token {
+public final class OAuth2Token {
 
     private String access_token;
     private int expires_in = 7200;
-   private String refresh_token;
+    private String refresh_token;
     private long exprexpiredTime;
     private String openid;
     private String scope;
@@ -73,7 +73,7 @@ public class OAuth2Token {
     public OAuth2Token(JSONObject jsonObj) throws WeixinException {
         this.access_token = jsonObj.getString("access_token");
         //根据当前时间的毫秒数+获取的秒数计算过期时间
-        int expiresIn = jsonObj.getInt("expires_in");
+        int expiresIn = jsonObj.getIntValue("expires_in");
         setExpires_in(expiresIn);
     }
 

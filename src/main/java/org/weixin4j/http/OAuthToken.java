@@ -19,10 +19,10 @@
  */
 package org.weixin4j.http;
 
+import com.alibaba.fastjson.JSONObject;
 import org.weixin4j.WeixinException;
 import java.io.Serializable;
 import java.util.Date;
-import net.sf.json.JSONObject;
 
 /**
  * 微信平台用户凭证对象
@@ -81,7 +81,7 @@ public final class OAuthToken implements Serializable {
     public OAuthToken(JSONObject jsonObj) throws WeixinException {
         this.access_token = jsonObj.getString("access_token");
         //根据当前时间的毫秒数+获取的秒数计算过期时间
-        int expiresIn = jsonObj.getInt("expires_in");
+        int expiresIn = jsonObj.getIntValue("expires_in");
         if (jsonObj.containsKey("create_time")) {
             //获取创建时间
             long createTime = jsonObj.getLong("create_time");

@@ -40,8 +40,13 @@ public class User {
     private String language;        //用户的语言，简体中文为zh_CN
     private String headimgurl;      //用户头像，最后一个数值代表正方形头像大小（有0、46、64、96、132数值可选，0代表640*640正方形头像），用户没有头像时该项为空
     private long subscribe_time;    //用户关注时间，为时间戳。如果用户曾多次关注，则取最后关注时间
+    private String unionid;         //只有在用户将公众号绑定到微信开放平台帐号后，才会出现该字段。
     private String remark;          //用户备注
     private String groupid;         //用户分组
+    private int[] tagid_list;       //用户被打上的标签ID列表
+
+    public User() {
+    }
 
     /**
      * 获取 用户的标识
@@ -286,5 +291,21 @@ public class User {
 
     public void setGroupid(String groupid) {
         this.groupid = groupid;
+    }
+
+    public int[] getTagid_list() {
+        return tagid_list;
+    }
+
+    public void setTagid_list(int[] tagid_list) {
+        this.tagid_list = tagid_list;
+    }
+
+    public String getUnionid() {
+        return unionid;
+    }
+
+    public void setUnionid(String unionid) {
+        this.unionid = unionid;
     }
 }

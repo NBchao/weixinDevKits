@@ -19,6 +19,7 @@
  */
 package org.weixin4j.http;
 
+import com.alibaba.fastjson.JSONObject;
 import java.io.BufferedInputStream;
 import org.weixin4j.Configuration;
 import org.weixin4j.WeixinException;
@@ -44,7 +45,6 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
-import net.sf.json.JSONObject;
 
 /**
  * 请求微信平台及响应的客户端类

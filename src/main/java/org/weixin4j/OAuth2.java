@@ -19,12 +19,12 @@
  */
 package org.weixin4j;
 
+import com.alibaba.fastjson.JSONObject;
 import org.weixin4j.http.OAuth;
 import org.weixin4j.http.OAuth2Token;
 import org.weixin4j.http.Response;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import net.sf.json.JSONObject;
 import org.weixin4j.http.HttpsClient;
 
 /**
@@ -202,7 +202,7 @@ public class OAuth2 extends WeixinSupport implements java.io.Serializable {
                 //设置公众号信息
                 oauth = new OAuth(appId, secret);
                 //设置凭证
-                this.oauth2Token = (OAuth2Token) JSONObject.toBean(jsonObj, OAuth2Token.class);
+                this.oauth2Token = (OAuth2Token) JSONObject.toJavaObject(jsonObj, OAuth2Token.class);
             }
         }
         return oauth2Token;
@@ -240,7 +240,7 @@ public class OAuth2 extends WeixinSupport implements java.io.Serializable {
             //登录成功，设置accessToken和过期时间
             if (obj != null) {
                 //设置凭证
-                this.oauth2Token = (OAuth2Token) JSONObject.toBean(jsonObj, OAuth2Token.class);
+                this.oauth2Token = (OAuth2Token) JSONObject.toJavaObject(jsonObj, OAuth2Token.class);
             }
         }
         return oauth2Token;
@@ -294,7 +294,7 @@ public class OAuth2 extends WeixinSupport implements java.io.Serializable {
                 throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
             }
             //设置公众号信息
-            user = (OAuth2User) JSONObject.toBean(jsonObj, OAuth2User.class);
+            user = (OAuth2User) JSONObject.toJavaObject(jsonObj, OAuth2User.class);
         }
         return user;
     }

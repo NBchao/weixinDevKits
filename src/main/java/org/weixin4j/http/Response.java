@@ -19,6 +19,8 @@
  */
 package org.weixin4j.http;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.weixin4j.WeixinException;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,8 +28,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import javax.net.ssl.HttpsURLConnection;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
  * <p>
@@ -127,7 +127,7 @@ public class Response {
      * @throws org.weixin4j.WeixinException
      */
     public JSONObject asJSONObject() throws WeixinException {
-        return JSONObject.fromObject(asString());
+        return JSONObject.parseObject(asString());
     }
 
     /**
@@ -137,7 +137,7 @@ public class Response {
      * @throws org.weixin4j.WeixinException
      */
     public JSONArray asJSONArray() throws WeixinException {
-        return JSONArray.fromObject(asString());
+        return JSONArray.parseArray(asString());
     }
 
     /**

@@ -19,6 +19,8 @@
  */
 package org.weixin4j;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.weixin4j.http.OAuth;
 import org.weixin4j.http.OAuthToken;
 import org.weixin4j.http.Response;
@@ -38,14 +40,10 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.weixin4j.http.Attachment;
 import org.weixin4j.http.HttpClient;
@@ -215,7 +213,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 //设置公众号信息
                 oauth = new OAuth(appId, secret);
                 //设置凭证
-                this.oauthToken = (OAuthToken) JSONObject.toBean(jsonObj, OAuthToken.class);
+                this.oauthToken = (OAuthToken) JSONObject.toJavaObject(jsonObj, OAuthToken.class);
             }
         }
         return oauthToken;
@@ -237,15 +235,15 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             if (oauthToken == null) {
                 throw new WeixinException("oauthToken is null,you must call login or init first!");
             } else //已过期
-             if (oauthToken.isExprexpired()) {
-                    //如果用户名和密码正确，则自动登录，否则返回异常
-                    if (oauth != null) {
-                        //自动重新发送登录请求
-                        login(oauth.getAppId(), oauth.getSecret());
-                    } else {
-                        throw new WeixinException("oauth is null and oauthToken is exprexpired, please log in again!");
-                    }
+            if (oauthToken.isExprexpired()) {
+                //如果用户名和密码正确，则自动登录，否则返回异常
+                if (oauth != null) {
+                    //自动重新发送登录请求
+                    login(oauth.getAppId(), oauth.getSecret());
+                } else {
+                    throw new WeixinException("oauth is null and oauthToken is exprexpired, please log in again!");
                 }
+            }
         }
     }
 
@@ -296,7 +294,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
             }
             //设置公众号信息
-            return (User) JSONObject.toBean(jsonObj, User.class);
+            return JSONObject.toJavaObject(jsonObj, User.class);
         }
         return null;
     }
@@ -312,6 +310,8 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
      */
     public Followers getAllUserList() throws WeixinException {
         Followers allFollower = new Followers();
+        int toatl = 0;
+        int count = 0;
         Data data = new Data();
         data.setOpenid(new ArrayList<String>());
         allFollower.setData(data);
@@ -322,13 +322,17 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 break;
             }
             if (f.getCount() > 0) {
+                count += f.getCount();
+                toatl += f.getTotal();
                 List<String> openids = f.getData().getOpenid();
                 for (String openid : openids) {
                     allFollower.getData().getOpenid().add(openid);
                 }
             }
             next_openid = f.getNext_openid();
-        } while (!next_openid.equals(""));
+        } while (next_openid != null && !next_openid.equals(""));
+        allFollower.setCount(count);
+        allFollower.setTotal(toatl);
         return allFollower;
     }
 
@@ -366,9 +370,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 //返回异常信息
                 throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
             }
-            Map<String, Class> map = new HashMap<String, Class>();
-            map.put("data", Data.class);
-            follower = (Followers) JSONObject.toBean(jsonObj, Followers.class, map);
+            follower = (Followers) JSONObject.toJavaObject(jsonObj, Followers.class);
         }
         return follower;
     }
@@ -409,7 +411,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
             }
             JSONObject jsonGroup = jsonObj.getJSONObject("group");
-            group = (Group) JSONObject.toBean(jsonGroup, Group.class);
+            group = (Group) JSONObject.toJavaObject(jsonGroup, Group.class);
         }
         return group;
     }
@@ -446,7 +448,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             JSONArray groups = jsonObj.getJSONArray("groups");
             for (int i = 0; i < groups.size(); i++) {
                 JSONObject jsonGroup = groups.getJSONObject(i);
-                Group group = (Group) JSONObject.toBean(jsonGroup, Group.class);
+                Group group = (Group) JSONObject.toJavaObject(jsonGroup, Group.class);
                 groupList.add(group);
             }
         }
@@ -490,7 +492,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
             }
             //获取成功返回分组Id
-            groupId = jsonObj.getInt("groupid");
+            groupId = jsonObj.getIntValue("groupid");
         }
         return groupId;
     }
@@ -531,7 +533,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             //判断是否修改成功
             //正常时返回 {"errcode": 0, "errmsg": "ok"}
             //错误时返回 示例：{"errcode":40013,"errmsg":"invalid appid"}
-            int errcode = jsonObj.getInt("errcode");
+            int errcode = jsonObj.getIntValue("errcode");
             //登录成功，设置accessToken和过期时间
             if (errcode != 0) {
                 //返回异常信息
@@ -606,7 +608,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             //判断是否修改成功
             //正常时返回 {"errcode": 0, "errmsg": "ok"}
             //错误时返回 示例：{"errcode":40013,"errmsg":"invalid appid"}
-            int errcode = jsonObj.getInt("errcode");
+            int errcode = jsonObj.getIntValue("errcode");
             //登录成功，设置accessToken和过期时间
             if (errcode != 0) {
                 //返回异常信息
@@ -905,7 +907,19 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         json.put("msgtype", "text");
         //创建请求对象
         HttpsClient http = new HttpsClient();
-        http.post("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + this.oauthToken.getAccess_token(), json);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + this.oauthToken.getAccess_token(), json);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("customSendNews返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            }
+        }
     }
 
     /**
@@ -924,7 +938,19 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         json.put("news", news);
         //创建请求对象
         HttpsClient http = new HttpsClient();
-        http.post("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + this.oauthToken.getAccess_token(), json);
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=" + this.oauthToken.getAccess_token(), json);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("customSendNews返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            }
+        }
     }
 
     /**
@@ -940,7 +966,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         HttpsClient http = new HttpsClient();
         //上传素材，返回JSON数据包
         String jsonStr = http.uploadHttps("https://api.weixin.qq.com/cgi-bin/media/upload?access_token=" + this.oauthToken.getAccess_token() + "&type=" + mediaType.toString(), file);
-        JSONObject jsonObj = JSONObject.fromObject(jsonStr);
+        JSONObject jsonObj = JSONObject.parseObject(jsonStr);
         if (jsonObj != null) {
             if (Configuration.isDebug()) {
                 System.out.println("上传多媒体文件返回json：" + jsonObj.toString());
@@ -987,7 +1013,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
             HttpClient http = new HttpClient();
             //上传素材，返回JSON数据包
             String jsonStr = http.upload("http://file.api.weixin.qq.com/cgi-bin/media/upload?access_token=" + this.oauthToken.getAccess_token() + "&type=" + mediaType, file);
-            JSONObject jsonObj = JSONObject.fromObject(jsonStr);
+            JSONObject jsonObj = JSONObject.parseObject(jsonStr);
             if (jsonObj != null) {
                 if (Configuration.isDebug()) {
                     System.out.println("上传多媒体文件返回json：" + jsonObj.toString());
@@ -1099,7 +1125,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 //返回异常信息
                 throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
             } else {
-                return new JsApiTicket(jsonObj.getString("ticket"), jsonObj.getInt("expires_in"));
+                return new JsApiTicket(jsonObj.getString("ticket"), jsonObj.getIntValue("expires_in"));
             }
         }
         return null;
@@ -1196,7 +1222,7 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
         checkLogin();
         //创建请求对象
         HttpsClient http = new HttpsClient();
-        //调用获取jsapi_ticket接口
+        //调用获取微信服务器IP接口
         Response res = http.get("https://api.weixin.qq.com/cgi-bin/getcallbackip?access_token=" + this.oauthToken.getAccess_token());
         //根据请求结果判定，是否验证成功
         JSONObject jsonObj = res.asJSONObject();
@@ -1214,10 +1240,383 @@ public class Weixin extends WeixinSupport implements java.io.Serializable {
                 JSONArray ipList = jsonObj.getJSONArray("ip_list");
                 if (ipList != null) {
                     //转换为List
-                    return ipList.subList(0, ipList.size());
+                    List ips = ipList.subList(0, ipList.size());
+                    return (List<String>) ips;
                 }
             }
         }
         return null;
+    }
+
+    /**
+     * 创建标签
+     *
+     * <p>
+     * 一个公众号，最多可以创建100个标签。</p>
+     *
+     * @param name 标签名，UTF8编码
+     * @return 包含标签ID的对象
+     * @throws org.weixin4j.WeixinException
+     */
+    public Tag createTags(String name) throws WeixinException {
+        //必须先调用检查登录方法
+        checkLogin();
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //拼接参数
+        JSONObject postTag = new JSONObject();
+        JSONObject postName = new JSONObject();
+        postName.put("name", name);
+        postTag.put("tag", postName);
+        //调用获创建标签接口
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/tags/create?access_token=" + this.oauthToken.getAccess_token(), postTag);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        //成功返回如下JSON:
+        //{"tag":{"id":134, name":"广东"}}
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("获取createTags返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            } else {
+                JSONObject tagJson = jsonObj.getJSONObject("tag");
+                if (tagJson != null) {
+                    return JSONObject.toJavaObject(tagJson, Tag.class);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 获取公众号已创建的标签
+     *
+     * @return 公众号标签列表
+     * @throws org.weixin4j.WeixinException
+     */
+    public List<Tag> getTags() throws WeixinException {
+        //必须先调用检查登录方法
+        checkLogin();
+        List<Tag> tagList = new ArrayList<Tag>();
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //调用获取jsapi_ticket接口
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/tags/get?access_token=" + this.oauthToken.getAccess_token());
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        //成功返回如下JSON:
+        //{"tags":[{"id":1,"name":"黑名单","count":0},{"id":2,"name":"星标组","count":0},{"id":127,"name":"广东","count":5}]}
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("获取getTags返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            } else {
+                JSONArray tags = jsonObj.getJSONArray("tags");
+                if (tags != null) {
+                    for (int i = 0; i < tags.size(); i++) {
+                        JSONObject jsonTag = tags.getJSONObject(i);
+                        Tag tag = (Tag) JSONObject.toJavaObject(jsonTag, Tag.class);
+                        tagList.add(tag);
+                    }
+                }
+            }
+        }
+        return tagList;
+    }
+
+    /**
+     * 编辑标签
+     *
+     * @param id 标签id，由微信分配
+     * @param name 标签名，UTF8编码（30个字符以内）
+     * @throws WeixinException 编辑标签异常
+     */
+    public void updateTag(int id, String name) throws WeixinException {
+        //必须先调用检查登录方法
+        checkLogin();
+        //内部业务验证
+        if (id < 0) {
+            throw new IllegalStateException("id can not <= 0!");
+        }
+        if (name == null || name.equals("")) {
+            throw new IllegalStateException("name is null!");
+        }
+        //拼接参数
+        JSONObject postTag = new JSONObject();
+        JSONObject postName = new JSONObject();
+        postName.put("id", id);
+        postName.put("name", name);
+        postTag.put("tag", postName);
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //调用获取access_token接口
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/tags/update?access_token=" + this.oauthToken.getAccess_token(), postTag);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("updateTag返回json：" + jsonObj.toString());
+            }
+            //判断是否修改成功
+            //正常时返回 {"errcode": 0, "errmsg": "ok"}
+            //错误时返回 示例：{"errcode":45158,"errmsg":"标签名长度超过30个字节"}
+            int errcode = jsonObj.getIntValue("errcode");
+            //登录成功，设置accessToken和过期时间
+            if (errcode != 0) {
+                //返回异常信息
+                throw new WeixinException(getCause(errcode));
+            }
+        }
+    }
+
+    /**
+     * 删除标签
+     *
+     * @param tagId 标签Id
+     * @throws WeixinException 删除分组异常
+     */
+    public void deleteTag(int tagId) throws WeixinException {
+        //必须先调用检查登录方法
+        checkLogin();
+        //拼接参数
+        JSONObject postParam = new JSONObject();
+        postParam.put("tagid", tagId);
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //调用获取access_token接口
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/tags/delete?access_token=" + this.oauthToken.getAccess_token(), postParam);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("deleteTag返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            }
+        }
+    }
+
+    /**
+     * 获取标签下所有粉丝列表
+     *
+     * <p>
+     * 通过公众号，返回用户对象，进行用户相关操作</p>
+     *
+     * @param tagid 标签ID
+     * @return 关注者对象
+     * @throws WeixinException
+     */
+    public Followers getAllTagUserList(int tagid) throws WeixinException {
+        Followers allFollower = new Followers();
+        int toatl = 0;
+        int count = 0;
+        Data data = new Data();
+        data.setOpenid(new ArrayList<String>());
+        allFollower.setData(data);
+        String next_openid = "";
+        do {
+            Followers f = getTagUserList(tagid, next_openid);
+            if (f == null) {
+                break;
+            }
+            if (f.getCount() > 0) {
+                count += f.getCount();
+                toatl += f.getTotal();
+                List<String> openids = f.getData().getOpenid();
+                for (String openid : openids) {
+                    allFollower.getData().getOpenid().add(openid);
+                }
+            }
+            next_openid = f.getNext_openid();
+        } while (next_openid != null && !next_openid.equals(""));
+        allFollower.setCount(count);
+        allFollower.setTotal(toatl);
+        return allFollower;
+    }
+
+    /**
+     * 获取标签下粉丝列表
+     *
+     * <p>
+     * 通过公众号，返回用户对象，进行用户相关操作</p>
+     *
+     * @param tagid 标签ID
+     * @param next_openid 第一个拉取的OPENID，不填默认从头开始拉取
+     * @return 关注者对象
+     * @throws WeixinException when Weixin service or network is unavailable, or
+     * the user has not authorized
+     */
+    public Followers getTagUserList(int tagid, String next_openid) throws WeixinException {
+        //拼接参数
+        String param = "?access_token=" + this.oauthToken.getAccess_token() + "&tagid=" + tagid + "&next_openid=";
+        //第一次获取不添加参数
+        if (next_openid != null && !next_openid.equals("")) {
+            param += next_openid;
+        }
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //调用获取标签下粉丝列表接口
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/user/tag/get" + param);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        Followers follower = null;
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("getTagUserList返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            }
+            follower = (Followers) JSONObject.toJavaObject(jsonObj, Followers.class);
+        }
+        return follower;
+    }
+
+    /**
+     * 批量为用户打标签
+     *
+     * @param tagid 标签ID
+     * @param openIds 粉丝OpenId集合
+     * @throws org.weixin4j.WeixinException
+     */
+    public void batchTagMembers(int tagid, String[] openIds) throws WeixinException {
+        JSONObject json = new JSONObject();
+        json.put("tagid", tagid);
+        json.put("openid_list", openIds);
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/tags/members/batchtagging?access_token=" + this.oauthToken.getAccess_token(), json);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("batchTagMembers返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            }
+        }
+    }
+
+    /**
+     * 批量为用户取消标签
+     *
+     * @param tagid 标签ID
+     * @param openIds 粉丝OpenId集合
+     * @throws org.weixin4j.WeixinException
+     */
+    public void batchunTagMembers(int tagid, String[] openIds) throws WeixinException {
+        JSONObject json = new JSONObject();
+        json.put("tagid", tagid);
+        json.put("openid_list", openIds);
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/tags/members/batchuntagging?access_token=" + this.oauthToken.getAccess_token(), json);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("batchunTagMembers返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            }
+        }
+    }
+
+    /**
+     * 获取用户身上的标签列表
+     *
+     * @param openid 粉丝OpenId
+     * @return 公众号标签ID集合
+     * @throws org.weixin4j.WeixinException
+     */
+    public Integer[] getUserTags(String openid) throws WeixinException {
+        //必须先调用检查登录方法
+        checkLogin();
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //调用获取用户身上的标签列表接口
+        Response res = http.get("https://api.weixin.qq.com/cgi-bin/tags/getidlist?access_token=" + this.oauthToken.getAccess_token());
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        //成功返回如下JSON:
+        //{"tagid_list":[134,2]}
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("获取getUserTags返回json：" + jsonObj.toString());
+            }
+            Object errcode = jsonObj.get("errcode");
+            if (errcode != null && !errcode.toString().equals("0")) {
+                //返回异常信息
+                throw new WeixinException(getCause(Integer.parseInt(errcode.toString())));
+            } else {
+                JSONArray tags = jsonObj.getJSONArray("tagid_list");
+                if (tags != null) {
+                    return tags.toArray(new Integer[]{});
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 设置用户备注名
+     *
+     * @param openId 用户标识
+     * @param remark 新的备注名（30个字符以内）
+     * @throws WeixinException 编辑标签异常
+     */
+    public void updateUserInfoRemark(String openId, String remark) throws WeixinException {
+        //必须先调用检查登录方法
+        checkLogin();
+        //内部业务验证
+        if (StringUtils.isEmpty(openId)) {
+            throw new IllegalStateException("openId is null!");
+        }
+        if (StringUtils.isEmpty(remark)) {
+            throw new IllegalStateException("remark is null!");
+        }
+        //拼接参数
+        JSONObject postParam = new JSONObject();
+        postParam.put("openid", openId);
+        postParam.put("remark", remark);
+        //创建请求对象
+        HttpsClient http = new HttpsClient();
+        //调用获取access_token接口
+        Response res = http.post("https://api.weixin.qq.com/cgi-bin/user/info/updateremark?access_token=" + this.oauthToken.getAccess_token(), postParam);
+        //根据请求结果判定，是否验证成功
+        JSONObject jsonObj = res.asJSONObject();
+        if (jsonObj != null) {
+            if (Configuration.isDebug()) {
+                System.out.println("updateUserInfoRemark返回json：" + jsonObj.toString());
+            }
+            //判断是否修改成功
+            //正常时返回 {"errcode": 0, "errmsg": "ok"}
+            //错误时返回 示例：{"errcode":40013,"errmsg":"invalid appid"}
+            int errcode = jsonObj.getIntValue("errcode");
+            //登录成功，设置accessToken和过期时间
+            if (errcode != 0) {
+                //返回异常信息
+                throw new WeixinException(getCause(errcode));
+            }
+        }
     }
 }
