@@ -80,6 +80,7 @@ public class InputMessage extends NormalMessage {
     private String Event;
     private String EventKey;
     private String Ticket;
+    private String MenuId;
     //上报地理位置事件
     private String Latitude;
     private String Longitude;
@@ -466,6 +467,7 @@ public class InputMessage extends NormalMessage {
     public ViewEventMessage toViewEventMessage() {
         ViewEventMessage eventMessage = new ViewEventMessage();
         eventMessage.setEventKey(EventKey);
+        eventMessage.setMenuId(MenuId);
         initEventMessage(eventMessage);
         return eventMessage;
     }
@@ -529,5 +531,14 @@ public class InputMessage extends NormalMessage {
         eventMessage.setToUserName(this.getToUserName());
         eventMessage.setFromUserName(this.getFromUserName());
         eventMessage.setCreateTime(this.getCreateTime());
+    }
+
+    public String getMenuId() {
+        return MenuId;
+    }
+
+    @XmlElement(name = "MenuId")
+    public void setMenuId(String MenuId) {
+        this.MenuId = MenuId;
     }
 }

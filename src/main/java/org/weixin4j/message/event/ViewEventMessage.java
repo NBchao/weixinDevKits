@@ -14,6 +14,7 @@ public class ViewEventMessage extends EventMessage {
 
     //事件KEY值，设置的跳转URL
     private String EventKey;
+    private String MenuId;
 
     @Override
     public String getEvent() {
@@ -26,6 +27,14 @@ public class ViewEventMessage extends EventMessage {
 
     public void setEventKey(String EventKey) {
         this.EventKey = EventKey;
+    }
+
+    public String getMenuId() {
+        return MenuId;
+    }
+
+    public void setMenuId(String MenuId) {
+        this.MenuId = MenuId;
     }
 
 }
