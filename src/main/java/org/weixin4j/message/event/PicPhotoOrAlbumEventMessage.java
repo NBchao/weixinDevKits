@@ -20,7 +20,7 @@ public class PicPhotoOrAlbumEventMessage extends EventMessage {
 
     @Override
     public String getEvent() {
-        return EventType.Pic_Sysphoto.toString();
+        return EventType.Pic_Photo_OR_Album.toString();
     }
 
     public String getEventKey() {

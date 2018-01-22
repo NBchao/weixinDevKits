@@ -378,7 +378,7 @@ public class InputMessage extends NormalMessage {
 
     public VoiceInputMessage toVoiceInputMessage() {
         VoiceInputMessage inputMessage = new VoiceInputMessage();
-        inputMessage.setFormat(PicUrl);
+        inputMessage.setFormat(Format);
         inputMessage.setMediaId(MediaId);
         inputMessage.setRecognition(Recognition);
         initNormalMessage(inputMessage);

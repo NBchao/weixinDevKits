@@ -19,7 +19,7 @@ public class LocationEventMessage extends EventMessage {
 
     @Override
     public String getEvent() {
-        return EventType.Location_Select.toString();
+        return EventType.Location.toString();
     }
 
     public String getLatitude() {

@@ -20,7 +20,7 @@ public class LocationSelectEventMessage extends EventMessage {
 
     @Override
     public String getEvent() {
-        return EventType.Pic_Sysphoto.toString();
+        return EventType.Location_Select.toString();
     }
 
     public String getEventKey() {

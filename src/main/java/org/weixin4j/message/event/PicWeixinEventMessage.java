@@ -20,7 +20,7 @@ public class PicWeixinEventMessage extends EventMessage {
 
     @Override
     public String getEvent() {
-        return EventType.Pic_Sysphoto.toString();
+        return EventType.Pic_Weixin.toString();
     }
 
     public String getEventKey() {

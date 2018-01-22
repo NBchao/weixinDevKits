@@ -154,6 +154,17 @@ public class HttpClient implements java.io.Serializable {
             }
             in.close();
             att.setError(bufferRes.toString());
+        } else if (http.getContentType().contains("application/json")) {
+            // 定义BufferedReader输入流来读取URL的响应  
+            InputStream in = http.getInputStream();
+            BufferedReader read = new BufferedReader(new InputStreamReader(in, "UTF-8"));
+            String valueString;
+            StringBuilder bufferRes = new StringBuilder();
+            while ((valueString = read.readLine()) != null) {
+                bufferRes.append(valueString);
+            }
+            in.close();
+            att.setError(bufferRes.toString());
         } else {
             BufferedInputStream bis = new BufferedInputStream(http.getInputStream());
             String ds = http.getHeaderField("Content-disposition");
