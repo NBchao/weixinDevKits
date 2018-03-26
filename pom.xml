@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.weixin4j</groupId>
-    <artifactId>weixin4j</artifactId>
+    <groupId>com.weixindevkits</groupId>
+    <artifactId>weixindevkits</artifactId>
     <version>0.0.9.2</version>
     <packaging>jar</packaging>
     <properties>
@@ -39,5 +39,5 @@
             <version>2.6</version>
         </dependency>
     </dependencies>
-    <name>weixin4j-0.0.9.2</name>
+    <name>weixindevkits</name>
 </project>
